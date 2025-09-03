@@ -52,6 +52,7 @@ import {
     MessageCircle,
     CheckCircle,
     Folders,
+    Folder, // Ícono añadido
     Plus,
     Table,
     Filter,
@@ -405,6 +406,7 @@ const ManualActionsView = () => (
     </div>
 );
 
+// ########## INICIO DE LA SECCIÓN MODIFICADA ##########
 const SnippetsView = () => (
     <div className="h-full flex flex-col p-6 bg-background">
         <div className="flex items-center justify-between w-full border-b border-border pb-4">
@@ -455,15 +457,80 @@ const SnippetsView = () => (
                         </div>
                     </div>
                 </TabsContent>
-                <TabsContent value="folders" className="flex-grow flex flex-col m-0">
-                    <div className="flex items-center justify-center flex-grow text-muted-foreground text-center">
-                        <p>Folders view is empty.</p>
+                
+                {/* Contenido de "Folders" actualizado */}
+                <TabsContent value="folders" className="flex-grow flex flex-col m-0 pt-4 space-y-4">
+                    <div className="flex justify-end">
+                        <div className="relative w-full max-w-sm">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="Search Folders" className="pl-10" />
+                        </div>
+                    </div>
+                    
+                    <div className="rounded-md border bg-card text-card-foreground flex-grow flex flex-col">
+                        <div className="flex-grow">
+                            <table className="w-full text-sm">
+                                <thead className="border-b">
+                                    <tr className="text-muted-foreground">
+                                        <th className="h-12 px-4 text-left font-medium">Folder Name</th>
+                                        <th className="h-12 px-4 text-left font-medium">Snippets</th>
+                                        <th className="h-12 px-4 text-left font-medium">Created on</th>
+                                        <th className="h-12 px-4"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b">
+                                        <td className="p-4 align-middle flex items-center gap-3">
+                                            <Folder className="h-4 w-4" /> 1
+                                        </td>
+                                        <td className="p-4 align-middle">0</td>
+                                        <td className="p-4 align-middle">02/09/2025 at 17:37 PM</td>
+                                        <td className="p-4 align-middle text-right">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="p-4 flex items-center justify-between text-sm text-muted-foreground border-t">
+                            <div>
+                                <p>Page 1 of 1</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm" disabled>Previous</Button>
+                                <Button variant="outline" size="sm" className="w-9 h-9 p-0 border-primary text-primary">1</Button>
+                                <Button variant="outline" size="sm">Next</Button>
+                                <Select defaultValue="10">
+                                    <SelectTrigger className="w-[100px] h-9">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10">10 / page</SelectItem>
+                                        <SelectItem value="20">20 / page</SelectItem>
+                                        <SelectItem value="50">50 / page</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                     </div>
                 </TabsContent>
+                
             </Tabs>
         </div>
     </div>
 );
+// ########## FIN DE LA SECCIÓN MODIFICADA ##########
 
 const TriggerLinksView = () => (
     <div className="h-full flex flex-col p-6 bg-background">
