@@ -1,11 +1,20 @@
-
 import * as admin from "firebase-admin";
 
-// Check if the app is already initialized before trying to initialize it
+/**
+ * Asegura que el SDK de Firebase Admin se inicialice solo una vez.
+ */
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
-const db = admin.firestore();
+/**
+ * Instancia de la base de datos Firestore.
+ */
+export const db = admin.firestore();
 
-export { admin, db };
+/**
+ * Instancia de la aplicación Firebase Admin.
+ */
+export const app = admin.app();
+
+export { admin };

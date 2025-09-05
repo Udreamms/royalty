@@ -33,13 +33,21 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db = exports.admin = void 0;
+exports.admin = exports.app = exports.db = void 0;
 const admin = __importStar(require("firebase-admin"));
 exports.admin = admin;
-// Check if the app is already initialized before trying to initialize it
+/**
+ * Asegura que el SDK de Firebase Admin se inicialice solo una vez.
+ */
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
-const db = admin.firestore();
-exports.db = db;
+/**
+ * Instancia de la base de datos Firestore.
+ */
+exports.db = admin.firestore();
+/**
+ * Instancia de la aplicación Firebase Admin.
+ */
+exports.app = admin.app();
 //# sourceMappingURL=firebase.js.map

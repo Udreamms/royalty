@@ -37,12 +37,15 @@ const mainNavItems: NavItem[] = [
 ];
 
 const secondaryNavItems: NavItem[] = [
+    { href: "/ai-agents", label: "AI Agents", icon: "auto_awesome" },
     { href: "/marketing", label: "Marketing", icon: "campaign" },
     { href: "/automation", label: "Automation", icon: "settings_suggest" },
     { href: "/sites", label: "Sites", icon: "language" },
     { href: "/memberships", label: "Memberships", icon: "card_membership" },
+    { href: "/media-storage", label: "Media Storage", icon: "perm_media" },
     { href: "/reputation", label: "Reputation", icon: "star" },
     { href: "/reporting", label: "Reporting", icon: "show_chart" },
+    { href: "/app-marketplace", label: "App Marketplace", icon: "apps" },
 ];
 
 const settingsNavLinks = [
