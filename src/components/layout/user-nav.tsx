@@ -15,7 +15,7 @@ import {
 import { LogOut, Settings, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
+import { auth } from '@/lib/firebase-client';
 import { signOut } from "firebase/auth";
 
 export function UserNav() {

@@ -1,47 +1,64 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 
 export default function OpportunitiesPipelinesPage() {
+  // Initialize theme from localStorage, default to "light" if not set
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") || "light";
+    }
+    return "light";
+  });
+
+  // Effect to toggle the 'dark' class
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
   const [tab, setTab] = useState<"opportunities" | "pipelines">("opportunities");
   const [allowDifferentOwners, setAllowDifferentOwners] = useState(true);
   const [autoOwnerToContact, setAutoOwnerToContact] = useState(true);
   const [autoContactToOwner, setAutoContactToOwner] = useState(true);
 
   return (
-    <div className="p-6">
-      {/* Título principal y tabs */}
-      <div className="border-b flex items-center gap-8 mb-6">
-        <span className="text-xl font-semibold py-4">Oportunidades y oportunidades</span>
+    <div className="p-6 bg-background text-foreground min-h-screen">
+      {/* Main title and tabs */}
+      <div className="border-b border-border flex items-center gap-8 mb-6">
+        <span className="text-xl font-semibold py-4 text-foreground">Opportunities and Pipelines</span>
         <div className="flex gap-2">
           <button
             className={`px-2 pb-2 border-b-2 ${
               tab === "opportunities"
-                ? "border-blue-600 text-blue-600 font-medium"
-                : "border-transparent text-gray-500"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground"
             }`}
             onClick={() => setTab("opportunities")}
           >
-            Oportunidades
+            Opportunities
           </button>
           <button
             className={`px-2 pb-2 border-b-2 ${
               tab === "pipelines"
-                ? "border-blue-600 text-blue-600 font-medium"
-                : "border-transparent text-gray-500"
+                ? "border-primary text-primary font-medium"
+                : "border-transparent text-muted-foreground"
             }`}
             onClick={() => setTab("pipelines")}
           >
-            Tuberías
+            Pipelines
           </button>
         </div>
       </div>
 
-      {/* Contenido de cada tab */}
+      {/* Content for each tab */}
       {tab === "opportunities" && (
         <div>
-          <h1 className="text-2xl font-semibold mb-6">
-            Personalizar la configuración de oportunidades
-          </h1>
-          <div className="bg-white rounded border shadow p-6 max-w-2xl">
+          <h1 className="text-2xl font-semibold mb-6 text-foreground">Customize Opportunity Settings</h1>
+          <div className="bg-card rounded border border-border shadow p-6 max-w-2xl">
             <div className="flex items-center mb-2">
               <label className="flex items-center cursor-pointer">
                 <input
@@ -51,27 +68,27 @@ export default function OpportunitiesPipelinesPage() {
                   className="peer sr-only"
                 />
                 <span
-                  className={`w-11 h-6 flex items-center bg-gray-200 rounded-full p-1 duration-300 ease-in-out ${
-                    allowDifferentOwners ? "bg-blue-600" : ""
+                  className={`w-11 h-6 flex items-center bg-muted rounded-full p-1 duration-300 ease-in-out ${
+                    allowDifferentOwners ? "bg-primary" : ""
                   }`}
                 >
                   <span
-                    className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    className={`bg-background w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out ${
                       allowDifferentOwners ? "translate-x-5" : ""
                     }`}
                   />
                 </span>
-                <span className="ml-3 font-medium">
-                  Permitir diferentes propietarios de Contactos y sus Oportunidades
+                <span className="ml-3 font-medium text-foreground">
+                  Allow Different Owners for Contacts and Their Opportunities
                 </span>
               </label>
             </div>
             <div className="ml-14 mb-2">
-              <a href="#" className="text-blue-600 text-sm hover:underline">
-                Más información sobre esta configuración.
+              <a href="#" className="text-primary text-sm hover:underline">
+                Learn more about this setting
               </a>
-              <div className="text-xs text-gray-500 mt-1">
-                Nota: Si la configuración está activada, los flujos de trabajo podrían dejar de asignar propietarios a las oportunidades.
+              <div className="text-xs text-muted-foreground mt-1">
+                Note: If this setting is enabled, workflows may stop assigning owners to opportunities.
               </div>
             </div>
             <div className="flex flex-col gap-3 mt-4">
@@ -80,17 +97,20 @@ export default function OpportunitiesPipelinesPage() {
                   type="checkbox"
                   checked={autoOwnerToContact}
                   onChange={() => setAutoOwnerToContact((v) => !v)}
-                  className="accent-blue-600 mt-1"
+                  className="form-checkbox h-4 w-4 rounded bg-input border-border text-primary focus:ring-primary mt-1"
                 />
                 <span>
-                  <span className="font-medium">
-                    Convertir automáticamente al propietario de la oportunidad en seguidor del contacto
+                  <span className="font-medium text-foreground">
+                    Automatically Convert Opportunity Owner to Contact Follower
                   </span>
-                  <span className="ml-1 text-gray-400 cursor-pointer" title="Cuando se selecciona un nuevo propietario para una oportunidad, se agregará como seguidor del contacto de esa oportunidad.">
+                  <span
+                    className="ml-1 text-muted-foreground cursor-pointer"
+                    title="When a new owner is selected for an opportunity, they will be added as a follower of that opportunity's contact."
+                  >
                     &#9432;
                   </span>
-                  <div className="text-sm text-gray-500">
-                    Cuando se selecciona un nuevo propietario para una oportunidad, se agregará como seguidor del contacto de esa oportunidad.
+                  <div className="text-sm text-muted-foreground">
+                    When a new owner is selected for an opportunity, they will be added as a follower of that opportunity's contact.
                   </div>
                 </span>
               </label>
@@ -99,27 +119,30 @@ export default function OpportunitiesPipelinesPage() {
                   type="checkbox"
                   checked={autoContactToOwner}
                   onChange={() => setAutoContactToOwner((v) => !v)}
-                  className="accent-blue-600 mt-1"
+                  className="form-checkbox h-4 w-4 rounded bg-input border-border text-primary focus:ring-primary mt-1"
                 />
                 <span>
-                  <span className="font-medium">
-                    Convertir automáticamente al propietario del contacto en seguidor de la oportunidad
+                  <span className="font-medium text-foreground">
+                    Automatically Convert Contact Owner to Opportunity Follower
                   </span>
-                  <span className="ml-1 text-gray-400 cursor-pointer" title="Cuando se selecciona un nuevo propietario para un contacto, se agregará como seguidor a las oportunidades de ese contacto.">
+                  <span
+                    className="ml-1 text-muted-foreground cursor-pointer"
+                    title="When a new owner is selected for a contact, they will be added as a follower to that contact's opportunities."
+                  >
                     &#9432;
                   </span>
-                  <div className="text-sm text-gray-500">
-                    Cuando se selecciona un nuevo propietario para un contacto, se agregará como seguidor a las oportunidades de ese contacto.
+                  <div className="text-sm text-muted-foreground">
+                    When a new owner is selected for a contact, they will be added as a follower to that contact's opportunities.
                   </div>
                 </span>
               </label>
             </div>
             <div className="flex justify-end mt-6">
               <button
-                className="bg-blue-600 text-white px-6 py-2 rounded font-medium disabled:bg-blue-200"
+                className="bg-primary text-primary-foreground px-6 py-2 rounded font-medium disabled:bg-primary/50"
                 disabled
               >
-                Guardar cambios
+                Save Changes
               </button>
             </div>
           </div>
@@ -129,13 +152,15 @@ export default function OpportunitiesPipelinesPage() {
       {tab === "pipelines" && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Tuberías</h2>
-            <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2 rounded flex items-center gap-2">
-              <span className="text-xl">+</span> Crear una nueva tubería
+            <h2 className="text-xl font-semibold text-foreground">Pipelines</h2>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-primary-foreground font-semibold px-5 py-2 rounded flex items-center gap-2"
+            >
+              <span className="text-xl">+</span> Create New Pipeline
             </button>
           </div>
-          <div className="text-center text-gray-500 mt-16">
-            Crea tu primer pipeline.
+          <div className="text-center text-muted-foreground mt-16">
+            Create your first pipeline.
           </div>
         </div>
       )}
