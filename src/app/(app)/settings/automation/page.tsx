@@ -45,9 +45,9 @@ const DatePickerDropdown = ({ onConfirm, onClear }) => {
                 {month === 'Sep' && <div className="text-muted-foreground/50">31</div>}
                 
                 {days.slice(month === 'Sep' ? 1: 3).map((d, i) => ( // Ajuste manual para el layout
-                    <button key={i} className={`w-8 h-8 rounded-full ${d.muted ? 'text-muted-foreground/50' : ''} ${d.isToday ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}>
-                        {d.day}
-                    </button>
+                    (<button key={i} className={`w-8 h-8 rounded-full ${d.muted ? 'text-muted-foreground/50' : ''} ${d.isToday ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}>
+                      {d.day}
+                    </button>)
                 ))}
                  {/* Rellenando días del mes siguiente para Octubre */}
                 {month === 'Oct' && <div className="text-muted-foreground/50">1</div>}

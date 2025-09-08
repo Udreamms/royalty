@@ -21,10 +21,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2.5"
-            >
+            <Link href="/dashboard" className="flex items-center gap-2.5" legacyBehavior>
               <Logo />
             </Link>
             <SidebarTrigger />
