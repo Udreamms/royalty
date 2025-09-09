@@ -11,35 +11,17 @@ export default function BillingPage() {
     return "light";
   });
 
-  // Effect to toggle the 'dark' class and persist theme to localStorage
+  // Effect to toggle the 'dark' class
   useEffect(() => {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme", theme);
-    }
   }, [theme]);
-
-  // Function to toggle between themes
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
 
   return (
     <div className="p-8 bg-background text-foreground min-h-screen">
-      {/* Theme toggle button */}
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={toggleTheme}
-          className="px-4 py-2 rounded font-medium border border-border bg-background hover:bg-muted text-foreground"
-        >
-          {theme === "light" ? "Switch to Dark Theme" : "Switch to Light Theme"}
-        </button>
-      </div>
-
       <h1 className="text-3xl font-semibold mb-6 text-foreground">Billing Dashboard</h1>
       <div className="bg-card rounded-xl shadow-sm p-12 flex flex-col items-center max-w-4xl mx-auto border border-border">
         {/* Payment illustration */}

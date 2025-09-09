@@ -76,6 +76,18 @@ const WarningIcon = () => (
   </svg>
 );
 
+const IpNotFoundIcon = () => (
+  <div className="bg-primary/10 p-3 rounded-full inline-flex">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+      <path d="M12 2a10 10 0 1 0 10 10c0-4.42-2.87-8.15-6.84-9.48"></path>
+      <path d="M22 2 2 22"></path>
+      <path d="M15.69 14.15a2.5 2.5 0 0 0-2.32-3.32"></path>
+      <path d="M12 12H9.5a2.5 2.5 0 0 0-2.5 2.5V17"></path>
+      <path d="M12 12V9.5a2.5 2.5 0 0 1 2.5-2.5V7"></path>
+    </svg>
+  </div>
+);
+
 // --- Componente para el contenido de la pestaña SMTP ---
 const SmtpServiceView = () => (
   <div className="mt-6">
@@ -321,7 +333,7 @@ const RiskAssessment = () => (
           </thead>
           <tbody>
             <tr className="border-b border-border">
-              <td colSpan="6" className="py-10 text-center text-muted-foreground">
+              <td colSpan={6} className="py-10 text-center text-muted-foreground">
                 <div className="flex flex-col items-center gap-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-muted">
                     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM13 7H11V13H13V7ZM13 15H11V17H13V15Z" fill="currentColor"/>
@@ -396,7 +408,7 @@ const BounceClassification = () => (
             </thead>
             <tbody>
               <tr className="border-b border-border">
-                <td colSpan="6" className="py-10 text-center text-muted-foreground">
+                <td colSpan={6} className="py-10 text-center text-muted-foreground">
                   No error bounces were found for the selected date and filters.
                 </td>
               </tr>
@@ -409,42 +421,84 @@ const BounceClassification = () => (
 );
 
 // --- Componente para el contenido de Postmaster Tools ---
-const PostmasterTools = () => (
-  <div className="mt-6">
-    <div className="bg-card border border-border rounded-lg p-6">
-      <h2 className="text-xl font-semibold text-foreground">Postmaster Tools</h2>
-      <div className="mt-6 space-y-6">
-        <div>
-          <button className="text-primary font-medium hover:underline">Google</button>
-          <h3 className="text-lg font-semibold text-foreground mt-2">Google Postmaster Tool</h3>
-          <p className="text-sm text-muted-foreground">With Google Postmaster Tools, you can optimize email performance and ensure accurate delivery to Gmail inboxes.</p>
-          <p className="text-sm text-muted-foreground mt-2">Connect your Google account that has access to the Google Postmaster data. For detailed steps, visit our <a href="#" className="text-primary hover:underline">support guide</a></p>
-          <button className="mt-4 bg-muted text-muted-foreground font-medium px-4 py-2 rounded-md flex items-center gap-2 hover:bg-muted/80">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-muted">
-              <path d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2ZM10 16C6.68629 16 4 13.3137 4 10C4 6.68629 6.68629 4 10 4C13.3137 4 16 6.68629 16 10C16 13.3137 13.3137 16 10 16ZM9 7H11V9H13V11H11V13H9V11H7V9H9V7Z" fill="currentColor"/>
-            </svg>
-            Connect to Google Postmaster
-          </button>
-        </div>
-        <div>
-          <button className="text-muted-foreground font-medium hover:underline">Microsoft SNDS</button>
-        </div>
-        <div className="bg-warning/10 border border-warning/50 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-warning flex-shrink-0">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
-            </svg>
-            <div>
-              <p className="text-sm text-warning font-medium">No Dedicated Sending Domains Detected</p>
-              <p className="text-sm text-warning/80 mt-1">It looks like you don't have any dedicated sending domains set up yet, or your domain is currently unverified. Having a dedicated domain helps optimize email performance and ensures reliable delivery to inboxes.</p>
-              <button className="mt-2 text-primary font-medium hover:underline">Create Domain Now →</button>
-            </div>
+const PostmasterTools = () => {
+  const [activeTool, setActiveTool] = useState("google");
+
+  const getButtonClasses = (tool: "google" | "microsoft") => {
+    return `w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+      activeTool === tool
+        ? "bg-primary/10 text-primary border-l-2 border-primary"
+        : "hover:bg-muted/50 text-muted-foreground"
+    }`;
+  };
+
+  return (
+    <div className="mt-6">
+      <div className="bg-card border border-border rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-foreground pb-6 border-b border-border">Postmaster Tools</h2>
+        <div className="mt-6 flex flex-col md:flex-row gap-8">
+          {/* Navegación Izquierda */}
+          <div className="w-full md:w-1/4 lg:w-1/5">
+            <nav className="flex flex-col space-y-1">
+              <button onClick={() => setActiveTool("google")} className={getButtonClasses("google")}>
+                Google
+              </button>
+              <button onClick={() => setActiveTool("microsoft")} className={getButtonClasses("microsoft")}>
+                Microsoft SNDS
+              </button>
+            </nav>
+          </div>
+
+          {/* Contenido Derecha */}
+          <div className="w-full md:w-3/4 lg:w-4/5">
+            {activeTool === "google" && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Google Postmaster Tool</h3>
+                <p className="text-sm text-muted-foreground mt-1">With Google Postmaster Tools, you can optimize email performance and ensure accurate delivery to Gmail inboxes.</p>
+                <p className="text-sm text-muted-foreground mt-2">Connect your Google account that has access to the Google Postmaster data. For detailed steps, visit our <a href="#" className="text-primary hover:underline">support guide</a></p>
+                <button className="mt-4 bg-muted text-muted-foreground font-medium px-4 py-2 rounded-md flex items-center gap-2 hover:bg-muted/80">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-muted">
+                    <path d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2ZM10 16C6.68629 16 4 13.3137 4 10C4 6.68629 6.68629 4 10 4C13.3137 4 16 6.68629 16 10C16 13.3137 13.3137 16 10 16ZM9 7H11V9H13V11H11V13H9V11H7V9H9V7Z" fill="currentColor"/>
+                  </svg>
+                  Connect to Google Postmaster
+                </button>
+                <div className="mt-6 bg-warning/10 border border-warning/50 rounded-lg p-4">
+                  <div className="flex items-start gap-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-warning flex-shrink-0">
+                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+                    </svg>
+                    <div>
+                      <p className="text-sm text-warning font-medium">No Dedicated Sending Domains Detected</p>
+                      <p className="text-sm text-warning/80 mt-1">It looks like you don't have any dedicated sending domains set up yet, or your domain is currently unverified. Having a dedicated domain helps optimize email performance and ensures reliable delivery to inboxes.</p>
+                      <button className="mt-2 text-primary font-medium hover:underline">Create Domain Now →</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTool === "microsoft" && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Microsoft SNDS Tool</h3>
+                <p className="text-sm text-muted-foreground mt-1">With Outlook Postmaster Tools, you can monitor and troubleshoot your emails effectively, ensuring they reach your recipient's inboxes without fail.</p>
+                <div className="mt-8 flex items-center justify-center text-center p-8 min-h-[300px] border border-dashed border-border rounded-lg">
+                  <div>
+                    <IpNotFoundIcon />
+                    <p className="mt-4 font-semibold text-foreground">IP not found in your account</p>
+                    <p className="mt-1 text-sm text-muted-foreground max-w-md">You're on a shared IP, the option to access detailed data about individual IPs and manage feedback loop settings might not be available, as these features are typically offered for dedicated IP account.</p>
+                    <button className="mt-4 text-sm font-medium text-primary hover:underline">
+                      Know more
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- Componente Principal de la Página ---
 export default function EmailServicesPage() {
@@ -488,11 +542,11 @@ export default function EmailServicesPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap pb-3 px-1 border-b-2 font-medium text-sm transition-colors
-                ${activeTab === tab.id
+              className={`whitespace-nowrap pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
                   ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300"
-                }`}
+              }`}
             >
               {tab.label}
             </button>
