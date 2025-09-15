@@ -88,7 +88,7 @@ const CalendarsView = () => (
                         <SelectValue placeholder="Status: All" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="all">Status:All</SelectItem>
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>
@@ -98,10 +98,13 @@ const CalendarsView = () => (
                         <SelectValue placeholder="Type: All" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="all">Type: All</SelectItem>
                         <SelectItem value="personal">Personal</SelectItem>
-                        <SelectItem value="team">Team</SelectItem>
-                        <SelectItem value="public">Public</SelectItem>
+                        <SelectItem value="team">Service</SelectItem>
+                        <SelectItem value="public">Collective Booking</SelectItem>
+                        <SelectItem value="resource">Class Booking</SelectItem>
+                        <SelectItem value="virtual">Event</SelectItem>
+                        <SelectItem value="appointment">Round Robin</SelectItem>
                     </SelectContent>
                 </Select>
                 <Select defaultValue="anyone">
@@ -395,3 +398,5 @@ export default function CalendarSettingsPage() {
         </div>
     );
 }
+
+//terminado 

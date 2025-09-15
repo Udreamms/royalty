@@ -28,8 +28,23 @@ const NoDataIcon = ({ className = "h-12 w-12 text-muted-foreground/50" }) => (
     </svg>
 );
 
+// --- INTERFAZ PARA DEFINIR LOS TIPOS DE LAS PROPS ---
+interface ToggleSwitchProps {
+  label: string;
+  description: string;
+}
+interface DatePickerPopoverProps {
+  initialStartDate: Date | null;
+  initialEndDate: Date | null;
+  onDateChange: (dates: { start: Date | null; end: Date | null }) => void;
+  onClose: () => void;
+}
+interface CalendarMonthProps {
+  dateToDisplay: Date;
+}
+
 // --- Componente para el Toggle Switch ---
-const ToggleSwitch = ({ label, description }) => (
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, description }) => (
     <div className="flex items-start">
         <label className="relative inline-flex cursor-pointer items-center">
             <input type="checkbox" value="" className="peer sr-only" />
@@ -203,11 +218,11 @@ const VoicemailSettingsContent = () => {
   const [timeoutValue, setTimeoutValue] = useState(40);
   const [showWarning, setShowWarning] = useState(true);
 
-  const handleTimeoutChange = (e) => {
-    const value = Number(e.target.value);
-    setTimeoutValue(value);
-    setShowWarning(value > 20);
-  };
+ const handleTimeoutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = Number(e.target.value);
+  setTimeoutValue(value);
+  setShowWarning(value > 20);
+};
 
   const sliderProgress = (timeoutValue / 60) * 100;
   const sliderBackgroundStyle = {
@@ -320,10 +335,16 @@ const VoicemailSettingsContent = () => {
 };
 
 // --- COMPONENTE DE CALENDARIO (MODIFICADO) ---
-const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onClose }) => {
-    const [draftStartDate, setDraftStartDate] = useState(initialStartDate);
-    const [draftEndDate, setDraftEndDate] = useState(initialEndDate);
-    const [displayDate, setDisplayDate] = useState(initialStartDate || new Date());
+const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({ 
+  initialStartDate, 
+  initialEndDate, 
+  onDateChange, 
+  onClose 
+}) => {
+    // 3. (Opcional pero recomendado) Especifica los tipos en los estados
+    const [draftStartDate, setDraftStartDate] = useState<Date | null>(initialStartDate);
+    const [draftEndDate, setDraftEndDate] = useState<Date | null>(initialEndDate);
+    const [displayDate, setDisplayDate] = useState<Date>(initialStartDate || new Date());
 
     const ChevronLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>;
     const ChevronRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>;
@@ -331,16 +352,16 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
     const goToPrevMonth = () => setDisplayDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
     const goToNextMonth = () => setDisplayDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
     
-    const handleDateClick = (date) => {
-        if (!draftStartDate || draftEndDate) {
-            setDraftStartDate(date);
-            setDraftEndDate(null);
-        } else if (date < draftStartDate) {
-            setDraftStartDate(date);
-        } else {
-            setDraftEndDate(date);
-        }
-    };
+const handleDateClick = (date: Date) => {
+    if (!draftStartDate || draftEndDate) {
+        setDraftStartDate(date);
+        setDraftEndDate(null);
+    } else if (date < draftStartDate) {
+        setDraftStartDate(date);
+    } else {
+        setDraftEndDate(date);
+    }
+};
 
     const handleConfirm = () => {
         onDateChange({ start: draftStartDate, end: draftEndDate });
@@ -378,64 +399,71 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
         setDraftEndDate(lastDay);
     };
 
-    const CalendarMonth = ({ dateToDisplay }) => {
-        const year = dateToDisplay.getFullYear();
-        const month = dateToDisplay.getMonth();
-        const monthName = dateToDisplay.toLocaleString('default', { month: 'short' });
-        const today = new Date();
+ const CalendarMonth: React.FC<CalendarMonthProps> = ({ dateToDisplay }) => {
+    const year = dateToDisplay.getFullYear();
+    const month = dateToDisplay.getMonth();
+    const monthName = dateToDisplay.toLocaleString('default', { month: 'short' });
+    const today = new Date();
 
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
-        const calendarDays = [];
-        const prevMonthLastDay = new Date(year, month, 0).getDate();
-        for (let i = firstDayOfMonth; i > 0; i--) {
-            calendarDays.push({ day: prevMonthLastDay - i + 1, isCurrent: false });
-        }
-        for (let i = 1; i <= daysInMonth; i++) {
-            calendarDays.push({ day: i, isCurrent: true, date: new Date(year, month, i) });
-        }
-        const remaining = 42 - calendarDays.length;
-        for (let i = 1; i <= remaining; i++) {
-            calendarDays.push({ day: i, isCurrent: false });
-        }
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    const calendarDays = [];
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
 
-        return (
-            <div className="flex-shrink-0">
-                <div className="mb-3 flex items-center justify-between text-sm">
-                    <button onClick={goToPrevMonth} className="p-1 text-muted-foreground hover:text-foreground"><ChevronLeftIcon/></button>
-                    <span className="font-semibold text-foreground">{monthName} {year}</span>
-                    <button onClick={goToNextMonth} className="p-1 text-muted-foreground hover:text-foreground"><ChevronRightIcon/></button>
-                </div>
-                <div className="grid grid-cols-7 gap-x-2 text-center text-xs text-muted-foreground">
-                    <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-                </div>
-                <div className="mt-2 grid grid-cols-7 gap-1">
-                    {calendarDays.map(({ day, isCurrent, date }, index) => {
-                        if (!isCurrent) {
-                            return <div key={index} className="flex h-8 w-8 items-center justify-center text-sm text-muted-foreground/50">{day}</div>;
-                        }
+    // Días del mes anterior (CORREGIDO)
+    for (let i = firstDayOfMonth; i > 0; i--) {
+        const day = prevMonthLastDay - i + 1;
+        calendarDays.push({ day: day, isCurrent: false, date: new Date(year, month - 1, day) });
+    }
+    // Días del mes actual
+    for (let i = 1; i <= daysInMonth; i++) {
+        calendarDays.push({ day: i, isCurrent: true, date: new Date(year, month, i) });
+    }
+    // Días del mes siguiente (CORREGIDO)
+    const remaining = 42 - calendarDays.length;
+    for (let i = 1; i <= remaining; i++) {
+        calendarDays.push({ day: i, isCurrent: false, date: new Date(year, month + 1, i) });
+    }
 
-                        const isStartDate = draftStartDate && date.toDateString() === draftStartDate.toDateString();
-                        const isEndDate = draftEndDate && date.toDateString() === draftEndDate.toDateString();
-                        const isToday = date.toDateString() === today.toDateString();
-
-                        const baseClasses = "relative flex h-8 w-8 items-center justify-center text-sm transition-colors rounded-full";
-                        const stateClasses = isStartDate || isEndDate
-                            ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted text-foreground";
-
-                        return (
-                            <button key={index} onClick={() => handleDateClick(date)} className={`${baseClasses} ${stateClasses}`}>
-                                {day}
-                                {isToday && !isStartDate && !isEndDate && <span className="absolute bottom-1.5 h-1 w-1 rounded-full bg-primary"></span>}
-                            </button>
-                        );
-                    })}
-                </div>
+    return (
+        <div className="flex-shrink-0">
+            <div className="mb-3 flex items-center justify-between text-sm">
+                <button onClick={goToPrevMonth} className="p-1 text-muted-foreground hover:text-foreground"><ChevronLeftIcon/></button>
+                <span className="font-semibold text-foreground">{monthName} {year}</span>
+                <button onClick={goToNextMonth} className="p-1 text-muted-foreground hover:text-foreground"><ChevronRightIcon/></button>
             </div>
-        );
-    };
+            <div className="grid grid-cols-7 gap-x-2 text-center text-xs text-muted-foreground">
+                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div className="mt-2 grid grid-cols-7 gap-1">
+                {calendarDays.map(({ day, isCurrent, date }, index) => {
+                    // Ahora 'date' siempre es un objeto Date válido, por lo que estas líneas no darán error.
+                    const isStartDate = draftStartDate && date.toDateString() === draftStartDate.toDateString();
+                    const isEndDate = draftEndDate && date.toDateString() === draftEndDate.toDateString();
+                    const isToday = date.toDateString() === today.toDateString();
+
+                    const baseClasses = "relative flex h-8 w-8 items-center justify-center text-sm transition-colors rounded-full";
+                    
+                    if (!isCurrent) {
+                        return <div key={index} className={`${baseClasses} text-muted-foreground/50`}>{day}</div>;
+                    }
+
+                    const stateClasses = isStartDate || isEndDate
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted text-foreground";
+
+                    return (
+                        <button key={index} onClick={() => handleDateClick(date)} className={`${baseClasses} ${stateClasses}`}>
+                            {day}
+                            {isToday && !isStartDate && !isEndDate && <span className="absolute bottom-1.5 h-1 w-1 rounded-full bg-primary"></span>}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
 
     const nextMonthDate = new Date(displayDate);
     nextMonthDate.setMonth(displayDate.getMonth() + 1);
@@ -777,3 +805,5 @@ export default function PhoneNumbersPage() {
   const tabs = [ { id: "manage", label: "Manage Numbers" }, { id: "advanced", label: "Advanced Settings" }, ];
   return ( <div className="p-8 bg-background text-foreground min-h-screen"><div className="max-w-5xl mx-auto"><h1 className="text-3xl font-bold text-foreground mb-6">Phone System</h1><div className="border-b border-border"><nav className="-mb-px flex space-x-8" aria-label="Tabs">{tabs.map((tab) => ( <button type="button" key={tab.id} onClick={() => setActiveTab(tab.id)} className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${ activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground" }`}>{tab.label}</button> ))}</nav></div><div className="mt-8">{activeTab === "manage" && <ManageNumbersContent />}{activeTab === "advanced" && <AdvancedSettingsContent />}</div></div></div> );
 }
+
+//listo

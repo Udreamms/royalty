@@ -3,17 +3,64 @@
 import React, { useState } from "react";
 
 // --- REUSABLE ICON COMPONENT ---
-const Icon = ({ path, className = "w-5 h-5", title = "" }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className} aria-label={title}>
-    <path d={path} />
+const Icon = ({ children, className = "w-5 h-5", title = "" }: { 
+  children: React.ReactNode, 
+  className?: string, 
+  title?: string 
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    role={title ? "img" : "presentation"}
+    aria-label={title || undefined}
+    aria-hidden={title ? undefined : true}
+  >
+    {children}
   </svg>
 );
 
+// --- INTERFACES ---
+interface DatePickerPopoverProps {
+  initialStartDate: Date | null;
+  initialEndDate: Date | null;
+  onDateChange: (dates: { start: Date | null; end: Date | null }) => void;
+  onClose: () => void;
+}
+interface CalendarMonthProps {
+  dateToDisplay: Date;
+}
+interface PauseDate {
+  id: number;
+  startDate: Date | null;
+  endDate: Date | null;
+  selectedWorkflow: string;
+  annually: boolean;
+}
+interface PauseDate {
+  id: number;
+  startDate: Date | null;
+  endDate: Date | null;
+  selectedWorkflow: string;
+  annually: boolean;
+}
+interface IconProps {
+  className?: string;
+  title?: string;
+  children: React.ReactNode; // recibiendo <path> como children
+}
+
 // --- CALENDAR (CORRECTED AND IMPROVED COMPONENT) ---
-const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onClose }) => {
-  const [draftStartDate, setDraftStartDate] = useState(initialStartDate);
-  const [draftEndDate, setDraftEndDate] = useState(initialEndDate);
-  const [displayDate, setDisplayDate] = useState(initialStartDate || new Date());
+const DatePickerPopover: React.FC<DatePickerPopoverProps> = ({
+  initialStartDate,
+  initialEndDate,
+  onDateChange,
+  onClose
+}) => {
+  const [draftStartDate, setDraftStartDate] = useState<Date | null>(initialStartDate);
+  const [draftEndDate, setDraftEndDate] = useState<Date | null>(initialEndDate);
+  const [displayDate, setDisplayDate] = useState<Date>(initialStartDate || new Date());
 
   const ChevronLeftIcon = () => (
     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -45,7 +92,7 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
   const goToPrevYear = () => setDisplayDate((d) => new Date(d.getFullYear() - 1, d.getMonth(), 1));
   const goToNextYear = () => setDisplayDate((d) => new Date(d.getFullYear() + 1, d.getMonth(), 1));
 
-  const handleDateClick = (date) => {
+  const handleDateClick = (date: Date) => {
     if (!draftStartDate || draftEndDate) {
       setDraftStartDate(date);
       setDraftEndDate(null);
@@ -57,7 +104,7 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
     }
   };
 
-  const handleConfirm = () => {
+const handleConfirm = () => {
     onDateChange({ start: draftStartDate, end: draftEndDate });
     onClose();
   };
@@ -67,18 +114,17 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
     setDraftEndDate(null);
   };
 
-  const CalendarMonth = ({ dateToDisplay }) => {
+  const CalendarMonth: React.FC<CalendarMonthProps> = ({ dateToDisplay }) => {
     const year = dateToDisplay.getFullYear();
     const month = dateToDisplay.getMonth();
     const monthName = dateToDisplay.toLocaleString("en-US", { month: "long" });
     const today = new Date();
-
+    
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
     const calendarDays = [];
-
     const prevMonthDays = new Date(year, month, 0).getDate();
+
     for (let i = firstDayOfMonth; i > 0; i--) {
       // Ensured a valid Date object is created for "previous month" days
       calendarDays.push({ day: prevMonthDays - i + 1, isCurrent: false, date: new Date(year, month - 1, prevMonthDays - i + 1) });
@@ -146,6 +192,8 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
   };
 
   const nextMonthDate = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 1);
+  const formatDate = (date: Date | null) => date ? date.toLocaleDateString('en-CA') : '';
+
 
   return (
     <div className="absolute left-0 top-full z-10 mt-2 min-w-max rounded-xl border bg-card p-4 shadow-lg">
@@ -161,16 +209,17 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
         </div>
       </div>
       <div className="flex gap-x-6">
-        <CalendarMonth dateToDisplay={displayDate} />
-        <CalendarMonth dateToDisplay={nextMonthDate} />
+          <CalendarMonth dateToDisplay={displayDate} />
+          <CalendarMonth dateToDisplay={nextMonthDate} />
       </div>
-      <div className="mt-4 flex items-center justify-end gap-3 border-t border-border pt-3">
-        <button onClick={handleClear} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-muted">
-          Clear
-        </button>
-        <button onClick={handleConfirm} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          Confirm
-        </button>
+
+      <div className="mt-4 flex items-center justify-end gap-3 border-t border-gray-200 pt-3">
+          <button onClick={handleClear} className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Clear
+          </button>
+          <button onClick={handleConfirm} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+              Confirm
+          </button>
       </div>
     </div>
   );
@@ -179,24 +228,30 @@ const DatePickerPopover = ({ initialStartDate, initialEndDate, onDateChange, onC
 
 export default function AutomationPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [isDatePickerVisible, setDatePickerVisible] = useState(null);
-  const [pauseDates, setPauseDates] = useState([
-    { id: 1, startDate: new Date(), endDate: new Date(new Date().setDate(new Date().getDate() + 7)), selectedWorkflow: '', annually: false }
-  ]);
+  const [isDatePickerVisible, setDatePickerVisible] = useState<number | null>(null);
+  const [pauseDates, setPauseDates] = useState<PauseDate[]>([
+  { id: 1, startDate: new Date(), endDate: new Date(new Date().setDate(new Date().getDate() + 7)), selectedWorkflow: '', annually: false }
+]);
+
 
   const addPauseDate = () => {
-    if (pauseDates.length < 15) {
-      setPauseDates([ ...pauseDates, { id: Date.now(), startDate: null, endDate: null, selectedWorkflow: "", annually: false } ]);
-    }
-  };
+  if (pauseDates.length < 15) {
+    setPauseDates([
+      ...pauseDates,
+      { id: Date.now(), startDate: null, endDate: null, selectedWorkflow: "", annually: false }
+    ]);
+  }
+};
 
-  const removePauseDate = (id) => {
-    setPauseDates(pauseDates.filter(date => date.id !== id));
-  };
+const removePauseDate = (id: number) => {
+  setPauseDates(pauseDates.filter(date => date.id !== id));
+};
 
-  const updatePauseDate = (id, newData) => {
-    setPauseDates(pauseDates.map((d) => (d.id === id ? { ...d, ...newData } : d)));
-  };
+const updatePauseDate = (id: number, newData: Partial<PauseDate>) => {
+  setPauseDates(
+    pauseDates.map((d) => (d.id === id ? { ...d, ...newData } : d))
+  );
+};
 
   return (
     <div className="p-4 sm:p-6 md:p-8 space-y-12 bg-background text-foreground">
@@ -210,7 +265,9 @@ export default function AutomationPage() {
                 <p className="mt-1 text-muted-foreground">Unlock more Workflow Premium Executions, enjoy better cost efficiency, and scale automations with ease. (Visible to Agency Admins only)</p>
               </div>
               <button className="bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap hover:bg-primary/90 transition-colors">
-                <Icon path="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" title="View Plans" />
+                <Icon title="View Plans">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                </Icon>             
                 View Plans
               </button>
             </div>
@@ -225,7 +282,9 @@ export default function AutomationPage() {
               <div className="p-6 space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="mt-1">
-                      <Icon path="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" className="w-8 h-8 text-muted-foreground" title="Email Icon"/>
+                      <Icon className="w-8 h-8 text-muted-foreground" title="Email Icon">
+                        <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" />
+                      </Icon>                    
                     </div>
                     <div>
                         <h3 className="font-semibold text-foreground">Email Notification</h3>
@@ -261,7 +320,7 @@ export default function AutomationPage() {
                   {/* DATE INPUT */}
                   <div className="w-full sm:w-auto flex-1 relative">
                     <button
-                      onClick={() => setDatePickerVisible(isDatePickerVisible === date.id ? null : date.id) }
+                      onClick={() => setDatePickerVisible(isDatePickerVisible === date.id ? null : date.id)}
                       className="w-full flex items-center justify-between border border-border rounded-md cursor-pointer p-2"
                     >
                       <span className="text-muted-foreground">
@@ -271,7 +330,9 @@ export default function AutomationPage() {
                       <span className="text-muted-foreground">
                         {date.endDate ? date.endDate.toLocaleDateString() : "End Date and Time"}
                       </span>
-                      <Icon path="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" className="ml-2 w-5 h-5 text-muted-foreground" title="Calendar Icon" />
+                    <Icon title="Calendar Icon" className="ml-2 w-5 h-5 text-muted-foreground">
+                       <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                    </Icon>
                     </button>
                     {isDatePickerVisible === date.id && (
                       <DatePickerPopover
@@ -286,8 +347,24 @@ export default function AutomationPage() {
                     <option>Select Workflows</option>
                   </select>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 text-muted-foreground hover:text-foreground" aria-label="Duplicate date entry"><Icon path="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" title="Duplicate Icon"/></button>
-                    <button className="p-2 text-muted-foreground hover:text-destructive" onClick={() => removePauseDate(date.id)} aria-label="Remove date entry"><Icon path="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" title="Remove Icon"/></button>
+                    <button
+  className="p-2 text-muted-foreground hover:text-foreground"
+  aria-label="Duplicate date entry"
+  onClick={() => {
+    const newDate = { ...date, id: Date.now() }; // copia el objeto con un nuevo id
+    setPauseDates([...pauseDates, newDate]);
+  }}
+>
+  <Icon title="Duplicate Icon">
+    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+  </Icon>
+</button>
+
+                    <button className="p-2 text-muted-foreground hover:text-destructive" onClick={() => removePauseDate(date.id)} aria-label="Remove date entry">
+                      <Icon title="Remove Icon">
+                       <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                     </Icon>
+                    </button>
                   </div>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
@@ -307,3 +384,5 @@ export default function AutomationPage() {
     </div>
   );
 }
+
+//casi listo (arreglar botones del calendario)

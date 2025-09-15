@@ -29,12 +29,13 @@ export default function MyStaffPage() {
           defaultValue=""
         >
           <option value="">User Role</option>
-          {/* Add more options here as needed */}
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
         </select>
         <input
           type="text"
           placeholder="name, email, phone"
-          className="border border-border rounded px-3 py-2 text-sm flex-1 bg-input text-foreground focus:ring-primary focus:ring-1"
+          className="border border-border rounded px-3 py-2 text-sm w-52 bg-input text-foreground focus:ring-primary focus:ring-1"
         />
         <button
           className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 py-2 rounded ml-2"
@@ -59,7 +60,15 @@ export default function MyStaffPage() {
                 <div className="flex flex-col items-center">
                   <div className="bg-primary/10 rounded-full p-4 mb-2">
                     <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" stroke="#2563eb" strokeWidth="2" fill="#e0e7ff" className="stroke-primary fill-primary/20" />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="#2563eb"
+                        strokeWidth="2"
+                        fill="#e0e7ff"
+                        className="stroke-primary fill-primary/20"
+                      />
                       <path
                         d="M12 8v4l3 3"
                         stroke="#2563eb"
@@ -83,3 +92,4 @@ export default function MyStaffPage() {
     </div>
   );
 }
+//listo 

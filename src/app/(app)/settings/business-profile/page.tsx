@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 
+
 export default function BusinessProfilePage() {
   // Initialize theme from localStorage, default to "light" if not set
   const [theme, setTheme] = useState(() => {
@@ -292,12 +293,14 @@ export default function BusinessProfilePage() {
                 The proposed size is 350px * 180px. No bigger than 2.5 MB
               </div>
               <div className="flex gap-2 mt-2">
-                <button
-                  className="text-primary text-sm border border-border px-3 py-1 rounded"
-                  onClick={() => document.querySelector('input[type="file"]').click()}
-                >
-                  Upload
-                </button>
+ <button
+  className="text-primary text-sm border border-border px-3 py-1 rounded"
+  onClick={() =>
+    (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()
+  }
+>
+  Upload
+</button>
                 <button
                   className="text-destructive text-sm border border-border px-3 py-1 rounded"
                   onClick={() => setLogo(null)}
@@ -817,3 +820,4 @@ export default function BusinessProfilePage() {
     </div>
   );
 }
+//listo 
