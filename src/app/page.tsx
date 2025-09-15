@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -13,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription_shadcn as AlertDescription, AlertTitle as AlertTitleShadcn } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth } from '@/lib/firebase-client';
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 
@@ -95,6 +94,9 @@ export default function LoginPage() {
         setIsLoading(false);
         return;
     }
+
+    // Agregado para depuración de la API Key
+    console.log("API Key recibida:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
 
     try {
       await signInWithEmailAndPassword(auth, email, password);

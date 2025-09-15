@@ -31,7 +31,7 @@ const pipelineStages = [
 
 // Componente para la tarjeta de una oportunidad
 const OpportunityCard = ({ opp }: { opp: Opportunity }) => (
-    <Link href={`/opportunities/${opp.id}`} passHref>
+    <Link href={`/opportunities/${opp.id}`} passHref legacyBehavior>
       <Card className="mb-3 cursor-pointer transition-shadow duration-200 hover:shadow-lg hover:border-primary/50">
         <CardContent className="p-3">
             <div className="flex justify-between items-start">
