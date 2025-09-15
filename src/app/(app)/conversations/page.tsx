@@ -58,8 +58,10 @@ import {
     Filter,
     ClipboardList,
     Briefcase,
-    Notebook
+    Notebook,
+    BarChart2
 } from 'lucide-react';
+
 
 const QuickFilters = () => (
     <div className="p-4 space-y-4">
@@ -406,6 +408,25 @@ const ManualActionsView = () => (
     </div>
 );
 
+const TriggerLinksAnalyzeView = () => (
+    <div className="h-full flex flex-col p-6 bg-background">
+        <div className="flex items-center justify-between w-full border-b border-border pb-4">
+            <div>
+                <h1 className="text-xl font-bold">Analyze</h1>
+                <p className="text-sm text-muted-foreground">
+                    Trigger links allow you to put links inside SMS messages and emails, which allow you to track specific customer actions and trigger events based on when the link is clicked.
+                </p>
+            </div>
+        </div>
+        <div className="flex-grow flex items-center justify-center">
+            <div className="text-center text-muted-foreground">
+                <BarChart2 className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                <p>No hay datos de análisis disponibles.</p>
+            </div>
+        </div>
+    </div>
+);
+
 // ########## INICIO DE LA SECCIÓN MODIFICADA ##########
 const SnippetsView = () => (
     <div className="h-full flex flex-col p-6 bg-background">
@@ -532,70 +553,125 @@ const SnippetsView = () => (
 );
 // ########## FIN DE LA SECCIÓN MODIFICADA ##########
 
-const TriggerLinksView = () => (
-    <div className="h-full flex flex-col p-6 bg-background">
-        <div className="flex items-center justify-between w-full border-b border-border pb-4">
-            <div>
-                <h1 className="text-xl font-bold">Link</h1>
-                <p className="text-sm text-muted-foreground">
-                    Trigger links allow you to put links inside SMS messages and emails, which allow you to track specific customer actions and trigger events based on when the link is clicked.
-                </p>
-            </div>
-            <Button className="flex items-center gap-2"><Plus className="h-4 w-4" /> Add Link</Button>
-        </div>
-        <div className="flex-grow flex flex-col pt-4">
-            <div className="flex items-center justify-end py-4">
-                <div className="relative flex-grow mr-4">
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search Trigger Link" className="pr-10 max-w-sm ml-auto" />
-                </div>
-            </div>
-            <div className="flex-grow flex flex-col">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="border-b border-border text-muted-foreground text-sm">
-                            <th className="p-3 font-normal">Name</th>
-                            <th className="p-3 font-normal">Link URL</th>
-                            <th className="p-3 font-normal">Link Key</th>
-                            <th className="p-3 font-normal">Actions</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div className="flex flex-col items-center justify-center flex-grow text-muted-foreground text-center">
-                    <Table className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                    <p>No Data</p>
-                </div>
-            </div>
-        </div>
-    </div>
-);
+// --- REEMPLAZA TU TRIGGERLINKSVIEW CON ESTE CÓDIGO ---
+const TriggerLinksView = () => {
+  // 1. Estado para controlar la vista activa
+  const [activeView, setActiveView] = useState<'links' | 'analyze'>('links');
 
+  // Contenido original de Links
+  const LinksContent = () => (
+    <div className="flex-grow flex flex-col pt-4">
+      <div className="flex items-center justify-end py-4">
+        <div className="relative flex-grow mr-4">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search Trigger Link" className="pr-10 max-w-sm ml-auto" />
+        </div>
+      </div>
+      <div className="flex-grow flex flex-col">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-b border-border text-muted-foreground text-sm">
+              <th className="p-3 font-normal">Name</th>
+              <th className="p-3 font-normal">Link URL</th>
+              <th className="p-3 font-normal">Link Key</th>
+              <th className="p-3 font-normal">Actions</th>
+            </tr>
+          </thead>
+        </table>
+        <div className="flex flex-col items-center justify-center flex-grow text-muted-foreground text-center">
+          <Table className="h-16 w-16 text-muted-foreground/50 mb-4" />
+          <p>No Data</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="h-full flex flex-col p-6 bg-background">
+      <div className="flex items-center justify-between w-full border-b border-border pb-4">
+        <div>
+          {/* 2. El menú desplegable que cambia el título */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-xl font-bold p-0 h-auto hover:bg-transparent -ml-2">
+                {activeView === 'links' ? 'Links' : 'Analyze'}
+                <ChevronDown className="h-5 w-5 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => setActiveView('links')}>Links</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setActiveView('analyze')}>Analyze</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <p className="text-sm text-muted-foreground">
+            Trigger links allow you to put links inside SMS messages and emails...
+          </p>
+        </div>
+        <Button className="flex items-center gap-2"><Plus className="h-4 w-4" /> Add Link</Button>
+      </div>
+      
+      {/* 3. Renderizado condicional del contenido */}
+      {activeView === 'links' ? <LinksContent /> : <TriggerLinksAnalyzeView />}
+    </div>
+  );
+};
 
 export default function ConversationsPage() {
+    const [activeTab, setActiveTab] = useState('conversations');
+    const [activeTriggerLinkView, setActiveTriggerLinkView] = useState<'links' | 'analyze'>('links');
     const [conversationSelected, setConversationSelected] = useState(true);
-
+    
     return (
         <div className="h-screen flex flex-col bg-background text-foreground">
-            <Tabs defaultValue="conversations" className="h-full flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
                 <header className="px-6 py-3 border-b border-border flex items-center justify-between bg-card flex-shrink-0">
-                    <div className="flex items-center gap-6 text-sm">
-                        <h1 className="font-bold text-lg text-foreground">Conversations</h1>
-                        <TabsList className="bg-transparent p-0 h-auto gap-1">
-                            <TabsTrigger value="conversations" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground">
-                                Conversations
-                            </TabsTrigger>
-                            <TabsTrigger value="manual-actions" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground">
-                                Manual Actions
-                            </TabsTrigger>
-                            <TabsTrigger value="snippets" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground">
-                                Snippets
-                            </TabsTrigger>
-                            <TabsTrigger value="trigger-links" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground">
-                                Trigger Links
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-                </header>
+    <div className="flex items-center gap-6 text-sm">
+        <h1 className="font-bold text-lg text-foreground">Conversations</h1>
+        
+        {/* La lista de pestañas ahora se controla con estado */}
+        <TabsList className="bg-transparent p-0 h-auto gap-1">
+            <TabsTrigger value="conversations" onClick={() => setActiveTab('conversations')} className="...">
+                Conversations
+            </TabsTrigger>
+            <TabsTrigger value="manual-actions" onClick={() => setActiveTab('manual-actions')} className="...">
+                Manual Actions
+            </TabsTrigger>
+            <TabsTrigger value="snippets" onClick={() => setActiveTab('snippets')} className="...">
+                Snippets
+            </TabsTrigger>
+
+            {/* El botón de Trigger Links ahora es un DropdownMenu */}
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button 
+                        variant="ghost"
+                        data-state={activeTab === 'trigger-links' ? 'active' : 'inactive'}
+                        className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground h-full px-4 py-2.5"
+                    >
+                        Trigger Links
+                        <ChevronDown className="h-4 w-4 ml-1" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onSelect={() => {
+                        setActiveTab('trigger-links');
+                        setActiveTriggerLinkView('links');
+                    }}>
+                        Links
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => {
+                        setActiveTab('trigger-links');
+                        setActiveTriggerLinkView('analyze');
+                    }}>
+                        Analyze
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+        </TabsList>
+    </div>
+</header>
 
                 <main className="flex-grow flex flex-col min-h-0">
                     <TabsContent value="conversations" className="flex-grow flex flex-col m-0">
@@ -676,10 +752,12 @@ export default function ConversationsPage() {
                         <SnippetsView />
                     </TabsContent>
                     <TabsContent value="trigger-links" className="h-full m-0">
-                        <TriggerLinksView />
+                        {activeTriggerLinkView === 'links' ? <TriggerLinksView /> : <TriggerLinksAnalyzeView />}
                     </TabsContent>
                 </main>
             </Tabs>
         </div>
     );
-}
+} 
+
+// Listo

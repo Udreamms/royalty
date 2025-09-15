@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-client';
 import { collection, query, onSnapshot, orderBy, Timestamp } from 'firebase/firestore';
 import { PlusCircle, Loader2, ServerCrash } from "lucide-react";
 import { Button } from "@/components/ui/button";

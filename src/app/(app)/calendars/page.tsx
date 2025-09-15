@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useState } from "react";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -8,15 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableHead } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
-import { Plus, Search, Calendar as CalendarIcon, Users, Lock, ExternalLink, SlidersHorizontal, ListFilter, AlignJustify, Trash2, Check, GripVertical, ChevronRight, Pencil, User } from "lucide-react";
+import { Plus, Search, Users, Lock, SlidersHorizontal, ListFilter, AlignJustify, Trash2, Check, GripVertical, ChevronRight, Pencil, User } from "lucide-react";
+import { Settings as SettingsIcon } from 'lucide-react'; // Renombrado para evitar conflicto
 
 // Utility function to merge class names
 export function cn(...inputs: ClassValue[]) {
@@ -397,15 +396,15 @@ function CustomizeListSheet({ open, onOpenChange, onFiltersClick, onSortByClick,
     );
 }
 
-// Reusable Appointment Actions Bar
-const AppointmentActionsBar = ({ onFiltersClick, onSortByClick, onManageColumnsClick }: { onFiltersClick: () => void; onSortByClick: () => void; onManageColumnsClick: () => void; }) => (
-    <div className="flex items-center justify-between mb-4">
+// Appointment Actions Bar (para el contenido de las pestañas)
+const AppointmentListActions = ({ onFiltersClick, onSortByClick, onManageColumnsClick }: { onFiltersClick: () => void; onSortByClick: () => void; onManageColumnsClick: () => void; }) => (
+    <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
             <Button variant="outline" className="text-sm" onClick={onFiltersClick}>
-                <ListFilter className="mr-2 h-4 w-4"/> Advanced Filters (1)
+                <ListFilter className="mr-2 h-4 w-4"/> Advanced Filters
             </Button>
             <Button variant="outline" className="text-sm" onClick={onSortByClick}>
-                <SlidersHorizontal className="mr-2 h-4 w-4"/> Sort by (1)
+                <SlidersHorizontal className="mr-2 h-4 w-4"/> Sort by
             </Button>
         </div>
         <div className="flex items-center space-x-2">
@@ -427,89 +426,88 @@ const AppointmentListView = () => {
     const [isColumnsOpen, setIsColumnsOpen] = useState(false);
     const [isCustomizeListOpen, setIsCustomizeListOpen] = useState(false);
     const [isBookAppointmentOpen, setIsBookAppointmentOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState("upcoming");
+    const [activeTab, setActiveTab] = useState("all");
 
     return (
-        <div className="flex flex-row h-full gap-6 bg-background text-foreground">
-            {/* Main column with appointment table */}
-            <div className="flex-grow flex flex-col min-w-0">
-                <h1 className="text-3xl font-bold text-foreground pb-4 mb-4">Appointments</h1>
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col flex-grow min-h-0">
-                    <TabsList className="border-b border-border justify-start rounded-none bg-transparent p-0 flex-shrink-0">
+        <div className="flex flex-col h-full bg-background text-foreground">
+            {/* INICIO: Cabecera movida y ajustada */}
+            <div className="flex items-center justify-between pb-4 mb-4">
+                <h1 className="text-3xl font-bold text-foreground">Appointments</h1>
+                <Button onClick={() => setIsBookAppointmentOpen(true)}><Plus className="mr-2 h-4 w-4" /> New Appointment</Button>
+            </div>
+            {/* FIN: Cabecera movida y ajustada */}
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col flex-grow min-h-0">
+                <div className="flex items-center justify-between border-b border-border">
+                    <TabsList className="bg-transparent p-0">
                         <TabsTrigger value="upcoming" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground px-4 py-2 h-auto">Upcoming</TabsTrigger>
                         <TabsTrigger value="cancelled" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground px-4 py-2 h-auto">Cancelled</TabsTrigger>
                         <TabsTrigger value="all" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground px-4 py-2 h-auto">All</TabsTrigger>
                         <TabsTrigger value="smart-list" className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none transition-none text-muted-foreground px-4 py-2 h-auto"><Plus className="mr-2 h-4 w-4" /> Smart list</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="upcoming" className="flex-grow flex flex-col pt-4 min-h-0">
-                        <AppointmentActionsBar onFiltersClick={() => setIsFiltersOpen(true)} onSortByClick={() => setIsSortByOpen(true)} onManageColumnsClick={() => setIsColumnsOpen(true)}/>
-                        <div className="border rounded-lg flex-grow flex flex-col">
-                            <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
-                            <div className="flex-grow flex items-center justify-center">
-                                <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
-                                    <AppointmentIllustration />
-                                    <h3 className="text-xl font-bold text-foreground">No Upcoming Appointments!</h3>
-                                    <p className="text-muted-foreground max-w-sm">You don't have any upcoming appointments right now.</p>
-                                    <Button className="mt-4">See All Appointments</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="cancelled" className="flex-grow flex flex-col pt-4 min-h-0">
-                        <AppointmentActionsBar onFiltersClick={() => setIsFiltersOpen(true)} onSortByClick={() => setIsSortByOpen(true)} onManageColumnsClick={() => setIsColumnsOpen(true)}/>
-                        <div className="border rounded-lg flex-grow flex flex-col">
-                            <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
-                            <div className="flex-grow flex items-center justify-center">
-                                <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
-                                    <CancelledAppointmentIllustration />
-                                    <h3 className="text-xl font-bold text-foreground">No Cancelled Appointments!</h3>
-                                    <p className="text-muted-foreground max-w-sm">You don't have any cancelled appointments at the moment.</p>
-                                    <Button className="mt-4">See All Appointments</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="all" className="flex-grow flex flex-col pt-4 min-h-0">
-                        <AppointmentActionsBar onFiltersClick={() => setIsFiltersOpen(true)} onSortByClick={() => setIsSortByOpen(true)} onManageColumnsClick={() => setIsColumnsOpen(true)}/>
-                        <div className="border rounded-lg flex-grow flex flex-col">
-                            <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
-                            <div className="flex-grow flex items-center justify-center">
-                                <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
-                                    <AllAppointmentsYetIllustration />
-                                    <h3 className="text-xl font-bold text-foreground">No Appointments Yet</h3>
-                                    <p className="text-muted-foreground max-w-sm">Book a test appointment to see how it works.</p>
-                                    <Button className="mt-4">Book a Test Appointment</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="smart-list" className="flex-grow flex flex-col pt-4 min-h-0">
-                        <div className="border rounded-lg flex-grow flex flex-col">
-                            <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
-                            <div className="flex-grow flex items-center justify-center">
-                                <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
-                                    <SmartListIllustration />
-                                    <h3 className="text-xl font-bold text-foreground">Create Your First Smart List</h3>
-                                    <p className="text-muted-foreground max-w-sm">Filter and save your appointments for quick access.</p>
-                                    <Button className="mt-4" onClick={() => setIsCustomizeListOpen(true)}><Plus className="mr-2 h-4 w-4"/> Create Smart List</Button>
-                                </div>
-                            </div>
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </div>
-            {/* Right sidebar with actions */}
-            <aside className="w-52 flex-shrink-0 pt-24">
-                <div className="space-y-3">
-                    <Button className="w-full" onClick={() => setIsBookAppointmentOpen(true)}><Plus className="mr-2 h-4 w-4" /> New Appointment</Button>
-                    <Button variant="outline" className="w-full justify-start text-muted-foreground" onClick={() => setIsCustomizeListOpen(true)}>
-                        <SlidersHorizontal className="mr-2 h-4 w-4" /> Customize List
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start text-muted-foreground" onClick={() => setIsColumnsOpen(true)}>
-                        <AlignJustify className="mr-2 h-4 w-4" /> Manage Columns
+                    <Button variant="ghost" className="text-sm text-muted-foreground" onClick={() => setIsCustomizeListOpen(true)}>
+                        <AlignJustify className="mr-2 h-4 w-4"/> Customize List
                     </Button>
                 </div>
-            </aside>
+
+                <div className="pt-4 pb-4">
+                    <AppointmentListActions onFiltersClick={() => setIsFiltersOpen(true)} onSortByClick={() => setIsSortByOpen(true)} onManageColumnsClick={() => setIsColumnsOpen(true)}/>
+                </div>
+                
+                <TabsContent value="upcoming" className="flex-grow flex flex-col min-h-0">
+                    <div className="border rounded-lg flex-grow flex flex-col">
+                        <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
+                        <div className="flex-grow flex items-center justify-center">
+                            <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
+                                <AppointmentIllustration />
+                                <h3 className="text-xl font-bold text-foreground">No Upcoming Appointments!</h3>
+                                <p className="text-muted-foreground max-w-sm">You don't have any upcoming appointments right now.</p>
+                                <Button className="mt-4" onClick={() => setActiveTab('all')}>See All Appointments</Button>
+                            </div>
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent value="cancelled" className="flex-grow flex flex-col min-h-0">
+                    <div className="border rounded-lg flex-grow flex flex-col">
+                         <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
+                        <div className="flex-grow flex items-center justify-center">
+                            <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
+                                <CancelledAppointmentIllustration />
+                                <h3 className="text-xl font-bold text-foreground">No Cancelled Appointments!</h3>
+                                <p className="text-muted-foreground max-w-sm">You don't have any cancelled appointments at the moment.</p>
+                                <Button className="mt-4" onClick={() => setActiveTab('all')}>See All Appointments</Button>
+                            </div>
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent value="all" className="flex-grow flex flex-col min-h-0">
+                     <div className="border rounded-lg flex-grow flex flex-col">
+                         <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
+                        <div className="flex-grow flex items-center justify-center">
+                            <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
+                                <AllAppointmentsYetIllustration />
+                                <h3 className="text-xl font-bold text-foreground">No Appointments Yet</h3>
+                                <p className="text-muted-foreground max-w-sm">Book a test appointment to see how it works.</p>
+                                <Button className="mt-4" onClick={() => setIsBookAppointmentOpen(true)}>Book a Test Appointment</Button>
+                            </div>
+                        </div>
+                    </div>
+                </TabsContent>
+                 <TabsContent value="smart-list" className="flex-grow flex flex-col min-h-0">
+                    <div className="border rounded-lg flex-grow flex flex-col">
+                        <Table><TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-[50px]">#</TableHead><TableHead>Title</TableHead><TableHead>Invitees</TableHead><TableHead>Status</TableHead><TableHead>Appointment Time</TableHead><TableHead>Calendar</TableHead><TableHead>Appointment Owner</TableHead></TableRow></TableHeader></Table>
+                        <div className="flex-grow flex items-center justify-center">
+                            <div className="flex flex-col items-center justify-center text-center gap-4 p-4">
+                                <SmartListIllustration />
+                                <h3 className="text-xl font-bold text-foreground">Create Your First Smart List</h3>
+                                <p className="text-muted-foreground max-w-sm">Filter and save your appointments for quick access.</p>
+                                <Button className="mt-4" onClick={() => setIsCustomizeListOpen(true)}><Plus className="mr-2 h-4 w-4"/> Create Smart List</Button>
+                            </div>
+                        </div>
+                    </div>
+                </TabsContent>
+            </Tabs>
+            
             {/* Modals and Sheets */}
             <BookAppointmentModal open={isBookAppointmentOpen} onOpenChange={setIsBookAppointmentOpen} />
             <AdvancedFiltersSheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen} />
@@ -518,9 +516,9 @@ const AppointmentListView = () => {
             <CustomizeListSheet
                 open={isCustomizeListOpen}
                 onOpenChange={setIsCustomizeListOpen}
-                onFiltersClick={() => { setIsCustomizeListOpen(false); setTimeout(() => setIsFiltersOpen(true), 150); }}
-                onSortByClick={() => { setIsCustomizeListOpen(false); setTimeout(() => setIsSortByOpen(true), 150); }}
-                onColumnsClick={() => { setIsCustomizeListOpen(false); setTimeout(() => setIsColumnsOpen(true), 150); }}
+                onFiltersClick={() => setIsFiltersOpen(true)}
+                onSortByClick={() => setIsSortByOpen(true)}
+                onColumnsClick={() => setIsColumnsOpen(true)}
             />
         </div>
     );
@@ -528,7 +526,7 @@ const AppointmentListView = () => {
 
 // Main Calendar Page Component
 export default function CalendarPage() {
-    const [view, setView] = useState("calendar");
+    const [view, setView] = useState("appointments");
     const handleAppointmentListClick = () => setView("appointments");
     const handleCalendarViewClick = () => setView("calendar");
 
@@ -536,12 +534,20 @@ export default function CalendarPage() {
         <div className="flex flex-col h-screen bg-background text-foreground">
             <div className="p-6 flex flex-col h-full">
                 <header className="flex items-center justify-between border-b pb-4 mb-4 flex-shrink-0">
-                    <nav className="flex items-center space-x-4 text-sm font-medium">
-                        <a href="#" className="text-muted-foreground hover:text-foreground">Contacts</a>
-                        <button onClick={handleCalendarViewClick} className={`${view === 'calendar' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'} hover:text-foreground pb-1 transition-colors duration-200`}>Calendar View</button>
-                        <button onClick={handleAppointmentListClick} className={`${view === 'appointments' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'} hover:text-foreground pb-1 transition-colors duration-200`}>Appointment List View</button>
+                    <nav className="flex items-center space-x-2 sm:space-x-4 text-sm font-medium">
+                        <h1 className="text-xl font-semibold pr-2 sm:pr-4">Calendars</h1>
+                        <button onClick={handleCalendarViewClick} className={cn('px-2 py-1 rounded-md', view === 'calendar' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}>Calendar View</button>
+                        <button onClick={handleAppointmentListClick} className={cn('px-2 py-1 rounded-md font-semibold', view === 'appointments' ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground')}>Appointment List View</button>
+                        
+                        {/* INICIO: CÓDIGO MODIFICADO */}
+                        <Link href="/settings/calendars">
+                            <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                                <SettingsIcon className="mr-2 h-4 w-4" />
+                                Calendar Settings
+                            </Button> 
+                        </Link>
+                        {/* FIN: CÓDIGO MODIFICADO */}
                     </nav>
-                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground">Calendar Settings</Button> {/* Add routing here if needed, e.g., <Link href="/calendar/settings"> */}
                 </header>
                 <main className="flex-grow min-h-0">
                     {view === "calendar" && (
@@ -560,3 +566,5 @@ export default function CalendarPage() {
         </div>
     );
 }
+
+// Listo
