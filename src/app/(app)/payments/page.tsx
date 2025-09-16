@@ -1,53 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import {
-    CreditCard,
-    DollarSign,
-    Shield,
-    Info,
-    ChevronDown,
-    Search,
-    Filter,
-    Settings,
-    Plus,
-    RefreshCw,
-    X,
-    UploadCloud,
-    Bold, 
-    Italic, 
-    Underline,
-    List,
-    ListOrdered,
-    Trash2
-} from "lucide-react";
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription_shadcn, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription_shadcn, AlertTitle } from "@/components/ui/alert";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+    Bold,
+    Box,
+    HandCoins, // <-- CORREGIDO AQUÍ
+    ChevronDown,
+    CreditCard,
+    DollarSign,
+    Download,
+    FileDown,
+    FileX,
+    Filter,
+    Globe2,
+    Info,
+    Italic,
+    List,
+    ListOrdered,
+    Plus,
+    RefreshCw,
+    Search,
+    Settings,
+    Shield,
+    Trash2,
+    Underline,
+    UploadCloud,
+    X,
+} from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -57,11 +46,28 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
     Table,
     TableBody,
@@ -71,6 +77,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 
 // --- Componente Simulado de Editor de Texto Rico ---
@@ -226,11 +233,17 @@ const SettingsDialog = ({ open, onOpenChange }: { open: boolean, onOpenChange: (
     const addCustomField = () => setCustomFields([...customFields, { id: Date.now() }]);
     const removeCustomField = (id: number) => setCustomFields(customFields.filter(field => field.id !== id));
 
-    const settingsNav = [
-        { name: "Business Information" }, { name: "Email Configurations" }, { name: "Title and Terms" },
-        { name: "Payment Settings" }, { name: "Product Settings" }, { name: "Reminder Settings" },
-        { name: "Custom fields" }, { name: "Notifications", subItems: ["Customer Notifications", "Team Notifications"] }
-    ];
+const settingsNav = [
+    { name: "Business Information" },
+    { name: "Receipts" }, // <-- AÑADE ESTA LÍNEA
+    { name: "Email Configurations" },
+    { name: "Title and Terms" },
+    { name: "Payment Settings" },
+    { name: "Product Settings" },
+    { name: "Reminder Settings" },
+    { name: "Custom fields" },
+    { name: "Notifications", subItems: ["Customer Notifications", "Team Notifications"] }
+];
 
     const renderSectionContent = () => {
         switch(activeSection) {
@@ -243,6 +256,60 @@ const SettingsDialog = ({ open, onOpenChange }: { open: boolean, onOpenChange: (
             case "Custom fields": return (<div className="space-y-6"><h3 className="text-xl font-semibold">Custom fields</h3><div className="space-y-4">{customFields.map((field, index) => (<div key={field.id} className="flex items-center gap-2"><div className="flex-grow"><Label htmlFor={`cf-${field.id}`}>Custom Field {index + 1} *</Label><Select><SelectTrigger><SelectValue placeholder="Choose an item"/></SelectTrigger><SelectContent><SelectItem value="item1">Item 1</SelectItem></SelectContent></Select></div><Button variant="ghost" size="icon" onClick={() => removeCustomField(field.id)}><X className="h-4 w-4"/></Button></div>))}</div><Button variant="outline" className="w-full border-dashed" onClick={addCustomField}><Plus className="mr-2 h-4 w-4"/>Add more custom field</Button></div>);
             case "Customer Notifications": return <CustomerNotificationsView />;
             case "Team Notifications": return <TeamNotificationsView />;
+            case "Receipts": return (
+            <div className="space-y-6">
+                <h3 className="text-xl font-semibold">Receipts</h3>
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/20">
+                    <Label htmlFor="enable-receipts" className="font-normal text-base">Enable automatic sales receipts for payments</Label>
+                    <Switch id="enable-receipts" defaultChecked />
+                </div>
+                <div className="space-y-5">
+                    <div>
+                        <Label htmlFor="receiptTitle">Title *</Label>
+                        <Input id="receiptTitle" defaultValue="RECEIPT" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="receiptPrefix">Receipt prefix *</Label>
+                            <Input id="receiptPrefix" defaultValue="REC" />
+                            <p className="text-xs text-muted-foreground mt-1">Prefix to be used while generating all receipts</p>
+                        </div>
+                        <div>
+                            <Label htmlFor="receiptStartNumber">Receipt start number *</Label>
+                            <Input id="receiptStartNumber" defaultValue="10001" />
+                            <p className="text-xs text-muted-foreground mt-1">Define the number to be used when creating the first receipt. The number will automatically increment with each receipt created</p>
+                        </div>
+                    </div>
+                    <div>
+                        <Label htmlFor="receiptFromName">From Name</Label>
+                        <Input id="receiptFromName" placeholder="From Name" />
+                        <p className="text-xs text-muted-foreground mt-1">Name used while sending receipt notifications. If left blank, business name will be used</p>
+                    </div>
+                    <div>
+                        <Label htmlFor="receiptFromEmail">From Email</Label>
+                        <Input id="receiptFromEmail" placeholder="From Email" />
+                        <p className="text-xs text-muted-foreground mt-1">Email address used while sending receipt notifications. If left blank, business email will be used</p>
+                    </div>
+                    <div>
+                        <Label htmlFor="receiptSubject">Subject *</Label>
+                        <Input id="receiptSubject" defaultValue="[[receipt.company.name]]] Thank you for your recent purchase" />
+                    </div>
+                    <div>
+                        <Label htmlFor="receiptEmailTemplate">Email Template</Label>
+                        <Select defaultValue="default">
+                            <SelectTrigger id="receiptEmailTemplate"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="default">Default</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Add Notes / Terms</Label>
+                        <MockRichTextEditor />
+                    </div>
+                </div>
+            </div>
+        );
             default: return <PlaceholderContent title={activeSection} />;
         }
     };
@@ -255,20 +322,20 @@ const SettingsDialog = ({ open, onOpenChange }: { open: boolean, onOpenChange: (
                     <aside className="w-1/4 border-r p-6 overflow-y-auto">
                         <nav className="flex flex-col gap-1">
                            {settingsNav.map(item => (
-                               item.subItems ? (
-                                   <Accordion key={item.name} type="single" collapsible>
-                                       <AccordionItem value={item.name} className="border-none">
-                                           <AccordionTrigger className="py-2 px-3 hover:bg-muted rounded-md">{item.name}</AccordionTrigger>
-                                           <AccordionContent className="pl-4">
-                                               {item.subItems.map(subItem => (
-                                                    <Button key={subItem} variant="ghost" className={`w-full justify-start ${activeSection === subItem ? 'bg-muted font-semibold' : ''}`} onClick={() => setActiveSection(subItem)}>{subItem}</Button>
-                                               ))}
-                                           </AccordionContent>
-                                       </AccordionItem>
-                                   </Accordion>
-                               ) : (
-                                <Button key={item.name} variant="ghost" className={`justify-start ${activeSection === item.name ? 'bg-muted font-semibold' : ''}`} onClick={() => setActiveSection(item.name)}>{item.name}</Button>
-                               )
+                                item.subItems ? (
+                                    <Accordion key={item.name} type="single" collapsible>
+                                        <AccordionItem value={item.name} className="border-none">
+                                            <AccordionTrigger className="py-2 px-3 hover:bg-muted rounded-md">{item.name}</AccordionTrigger>
+                                            <AccordionContent className="pl-4">
+                                                {item.subItems.map(subItem => (
+                                                     <Button key={subItem} variant="ghost" className={`w-full justify-start ${activeSection === subItem ? 'bg-muted font-semibold' : ''}`} onClick={() => setActiveSection(subItem)}>{subItem}</Button>
+                                                ))}
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
+                                ) : (
+                                 <Button key={item.name} variant="ghost" className={`justify-start ${activeSection === item.name ? 'bg-muted font-semibold' : ''}`} onClick={() => setActiveSection(item.name)}>{item.name}</Button>
+                                )
                            ))}
                         </nav>
                     </aside>
@@ -464,10 +531,1013 @@ const DocumentsAndContractsContent = ({ activeSubTab, onNavigate }: { activeSubT
     }
 };
 
+// --- View for "Subscriptions" ---
+const SubscriptionsView = () => {
+    return (
+        <div className="space-y-6">
+            {/* Encabezado */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-bold">Subscriptions</h2>
+                    <p className="text-muted-foreground">Keep track of customer subscriptions created via order forms</p>
+                </div>
+                <Button><Plus className="mr-2 h-4 w-4" />Add Subscription</Button>
+            </div>
+
+            {/* Tarjeta de contenido principal */}
+            <Card>
+                <CardContent className="p-6">
+                    {/* Barra de filtros y búsqueda */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <div className="flex items-center gap-2 flex-grow">
+                            <Input placeholder="Start Date" className="w-40" />
+                            <span className="text-muted-foreground">→</span>
+                            <Input placeholder="End Date" className="w-40" />
+                            <div className="relative flex-grow max-w-xs">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search" className="pl-10" />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline"><Filter className="mr-2 h-4 w-4"/>Filters</Button>
+                            <Button variant="outline" size="icon">
+                                <Download className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Tabla de suscripciones */}
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent">
+                                    <TableHead>Provider</TableHead>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Source</TableHead>
+                                    <TableHead>Created</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={6}>
+                                        <div className="h-64 flex flex-col items-center justify-center text-center">
+                                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                                                <Search className="h-6 w-6 text-muted-foreground"/>
+                                            </div>
+                                            <p className="font-semibold text-foreground">No subscriptions to show yet</p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- View for "Payment Links" ---
+const PaymentLinksView = () => {
+    return (
+        <div className="space-y-6">
+            {/* Encabezado */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-bold">Payment Links</h2>
+                    <p className="text-muted-foreground">Create and Manage your Payment Links</p>
+                </div>
+                <Button><Plus className="mr-2 h-4 w-4" />Create New Payment Link</Button>
+            </div>
+
+            {/* Tarjeta de contenido */}
+            <Card>
+                <CardContent className="p-6">
+                    {/* Barra de filtros y búsqueda */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <div className="flex items-center gap-2">
+                            <Input placeholder="Start Date" className="w-40" />
+                            <span className="text-muted-foreground">→</span>
+                            <Input placeholder="End Date" className="w-40" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="relative w-64">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search" className="pl-10" />
+                            </div>
+                            <Button variant="outline"><Filter className="mr-2 h-4 w-4"/>Filters</Button>
+                        </div>
+                    </div>
+
+                    {/* Tabla */}
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent">
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Link Url</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Price</TableHead>
+                                    <TableHead>Created At</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={5}>
+                                        <div className="h-64 flex flex-col items-center justify-center text-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                                <Search className="h-6 w-6 text-muted-foreground"/>
+                                            </div>
+                                            <p className="font-semibold text-foreground">Payment Links</p>
+                                            <Button><Plus className="mr-2 h-4 w-4"/>Create Link</Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- View for "Transactions" ---
+const TransactionsView = () => {
+    return (
+        <div className="space-y-6">
+            {/* Encabezado */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-bold">Transactions</h2>
+                    <p className="text-muted-foreground">Track customer payments at a single place</p>
+                </div>
+                <Button variant="outline"><FileDown className="mr-2 h-4 w-4" />Import as CSV</Button>
+            </div>
+
+            {/* Tarjeta de contenido */}
+            <Card>
+                <CardContent className="p-6">
+                    {/* Barra de filtros y búsqueda */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <div className="flex items-center gap-2">
+                            <Input placeholder="Start Date" className="w-40" />
+                            <span className="text-muted-foreground">→</span>
+                            <Input placeholder="End Date" className="w-40" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="relative w-64">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search" className="pl-10" />
+                            </div>
+                            <Button variant="outline"><Filter className="mr-2 h-4 w-4"/>Filters</Button>
+                            <Button variant="ghost" size="icon">
+                                <RefreshCw className="h-5 w-5 text-muted-foreground" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Tabla */}
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent">
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Provider</TableHead>
+                                    <TableHead>Source</TableHead>
+                                    <TableHead>Transaction Date</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={6}>
+                                        <div className="h-64 flex flex-col items-center justify-center text-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                                <Search className="h-6 w-6 text-muted-foreground"/>
+                                            </div>
+                                            <p className="font-semibold text-foreground">No transactions to show yet</p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- View for "Coupons" ---
+const CouponsView = () => {
+    const couponTabs = ["All", "Active", "Scheduled", "Expired"];
+
+    // Creamos un componente reutilizable para el estado vacío
+    const EmptyState = () => (
+        <div className="h-64 flex flex-col items-center justify-center text-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                <Search className="h-6 w-6 text-muted-foreground"/>
+            </div>
+            <p className="font-semibold text-foreground">No coupons found</p>
+            <Button><Plus className="mr-2 h-4 w-4"/>Create Coupon</Button>
+        </div>
+    );
+
+    return (
+        <div className="space-y-6">
+            {/* Encabezado */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-bold">Coupons</h2>
+                    <p className="text-muted-foreground">Manage coupon discounts to increase conversion</p>
+                </div>
+                <Button><Plus className="mr-2 h-4 w-4" />Create Coupon</Button>
+            </div>
+
+            {/* Tarjeta de contenido principal */}
+            <Card>
+                <CardContent className="p-6">
+                    <Tabs defaultValue="All">
+                        {/* Pestañas de filtro y barra de búsqueda */}
+                        <div className="flex justify-between items-center mb-4">
+                            <TabsList>
+                                {couponTabs.map(tab => (
+                                    <TabsTrigger key={tab} value={tab}>{tab}</TabsTrigger>
+                                ))}
+                            </TabsList>
+                            <div className="relative w-64">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search" className="pl-10" />
+                            </div>
+                        </div>
+
+                        {/* Contenido de la tabla (igual para todas las pestañas en este ejemplo) */}
+                        {couponTabs.map(tab => (
+                            <TabsContent key={tab} value={tab}>
+                                <div className="border rounded-lg">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="hover:bg-transparent">
+                                                <TableHead>Coupon Name</TableHead>
+                                                <TableHead>Coupon Code</TableHead>
+                                                <TableHead>Discount</TableHead>
+                                                <TableHead>Start Date</TableHead>
+                                                <TableHead>Status</TableHead>
+                                                <TableHead>Redemption Count</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell colSpan={6}>
+                                                    <EmptyState />
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </TabsContent>
+                        ))}
+                    </Tabs>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Recibos (Receipts) ---
+const ReceiptsSettings = () => {
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b">
+                <div>
+                    <h3 className="text-xl font-semibold">Receipts</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Switch id="automatic-receipts" defaultChecked />
+                    <Label htmlFor="automatic-receipts" className="font-normal whitespace-nowrap">Enable automatic sales receipts for payments</Label>
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <div>
+                    <Label htmlFor="receipt-title">Title *</Label>
+                    <Input id="receipt-title" defaultValue="RECEIPT" />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="receipt-prefix">Receipt prefix *</Label>
+                        <Input id="receipt-prefix" defaultValue="REC" />
+                        <p className="text-xs text-muted-foreground mt-1">Prefix to be used while generating all receipts</p>
+                    </div>
+                    <div>
+                        <Label htmlFor="receipt-start-number">Receipt start number *</Label>
+                        <Input id="receipt-start-number" defaultValue="10001" type="number" />
+                        <p className="text-xs text-muted-foreground mt-1">Define the number to be used when creating the first receipt...</p>
+                    </div>
+                </div>
+                <div>
+                    <Label htmlFor="from-name">From Name</Label>
+                    <Input id="from-name" placeholder="From Name" />
+                    <p className="text-xs text-muted-foreground mt-1">Name used while sending receipt notifications. If left blank, business name will be used</p>
+                </div>
+                <div>
+                    <Label htmlFor="from-email">From Email</Label>
+                    <Input id="from-email" placeholder="From Email" />
+                    <p className="text-xs text-muted-foreground mt-1">Email address used while sending receipt notifications. If left blank, business email will be used</p>
+                </div>
+                <div>
+                    <Label htmlFor="subject">Subject *</Label>
+                    <Input id="subject" defaultValue="[[receipt.company.name]] Thank you for your recent purchase" />
+                </div>
+                <div>
+                    <Label>Email Template</Label>
+                    <Select defaultValue="default">
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent><SelectItem value="default">Default</SelectItem></SelectContent>
+                    </Select>
+                </div>
+                <div>
+                    <Label>Add Notes / Terms</Label>
+                    {/* Aquí reutilizamos el editor de texto que ya tenías */}
+                    <MockRichTextEditor />
+                </div>
+            </div>
+
+            <div className="flex justify-end pt-4 border-t">
+                <Button>Save</Button>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Impuestos (Taxes) ---
+const TaxesSettings = () => {
+    return (
+        <div className="space-y-8">
+            {/* Sección de Incluir Impuesto en Precios */}
+            <div className="pb-6 border-b">
+                <h3 className="text-lg font-semibold">Include tax in prices</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                    Define if product prices should be inclusive or exclusive of tax by default.
+                </p>
+                <RadioGroup defaultValue="no" className="space-y-2">
+                    <Label className="flex items-start gap-3 border rounded-md p-4 cursor-pointer [&:has([data-state=checked])]:border-primary">
+                        <RadioGroupItem value="yes" id="tax-yes" />
+                        <div className="grid gap-1.5">
+                            <span className="font-semibold">Yes</span>
+                            <span className="text-sm text-muted-foreground">
+                                Tax will be included in the purchase price. The price shown to the customer will include the tax amount.
+                            </span>
+                        </div>
+                    </Label>
+                    <Label className="flex items-start gap-3 border rounded-md p-4 cursor-pointer [&:has([data-state=checked])]:border-primary">
+                        <RadioGroupItem value="no" id="tax-no" />
+                        <div className="grid gap-1.5">
+                            <span className="font-semibold">No</span>
+                            <span className="text-sm text-muted-foreground">
+                                Tax will not be included in the purchase price. The price shown to the customer will not include the tax amount.
+                            </span>
+                        </div>
+                    </Label>
+                </RadioGroup>
+            </div>
+
+            {/* Sección de Tasas de Impuestos */}
+            <div>
+                <div className="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 className="text-lg font-semibold">Tax Rates</h3>
+                        <p className="text-sm text-muted-foreground">Manage tax rates for your business</p>
+                    </div>
+                    <Button><Plus className="mr-2 h-4 w-4" />Add Tax</Button>
+                </div>
+                <div className="border rounded-lg">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent">
+                                <TableHead>Name</TableHead>
+                                <TableHead>Rate</TableHead>
+                                <TableHead>Description</TableHead>
+                                <TableHead>Tax Id Number</TableHead>
+                                <TableHead>Tax Agency</TableHead>
+                                <TableHead>Created At</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={6}>
+                                    <div className="h-64 flex flex-col items-center justify-center text-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                            <Search className="h-6 w-6 text-muted-foreground" />
+                                        </div>
+                                        <p className="font-semibold text-foreground">No taxes to show yet</p>
+                                        <Button><Plus className="mr-2 h-4 w-4" />Create Tax</Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+
+            {/* Sección de Impuestos Automáticos */}
+            <div className="pb-6 border-b">
+                <h3 className="text-lg font-semibold">Automatic Taxes</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                    Automatically calculates tax based on customer's address and/or business's address as applicable.
+                </p>
+                <div className="flex items-center gap-2">
+                    <Switch id="automatic-tax" />
+                    <Label htmlFor="automatic-tax" className="flex items-center gap-1 font-normal">
+                        Enable automatic tax <Info className="h-4 w-4 text-muted-foreground" />
+                    </Label>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// 1. (Opcional, si no lo tienes ya) Asegúrate de tener esta importación al inicio de tu archivo
 
 
-// --- Component for "Integrations" page ---
-const IntegrationsContent = () => (<div>Integrations Page</div>);
+// 2. Definimos una "interfaz" para describir las propiedades que espera el componente
+interface NotificationSettingsBlockProps {
+    title: string;
+    description: string;
+    toggleLabel: string;
+    children: React.ReactNode; // 'React.ReactNode' significa que puede recibir cualquier elemento de React
+}
+
+// 3. Aplicamos la interfaz a las props del componente
+const NotificationSettingsBlock = ({ title, description, toggleLabel, children }: NotificationSettingsBlockProps) => {
+    return (
+        <div className="border rounded-lg">
+            <div className="p-6 space-y-4">
+                <div>
+                    <h4 className="text-lg font-semibold">{title}</h4>
+                    <p className="text-sm text-muted-foreground">{description}</p>
+                </div>
+                <div className="flex items-center">
+                    <Switch id={`toggle-${title.replace(/\s+/g, '-')}`} defaultChecked />
+                    <Label htmlFor={`toggle-${title.replace(/\s+/g, '-')}`} className="ml-2 font-normal">{toggleLabel}</Label>
+                </div>
+                <div className="space-y-4 pt-4">
+                    {children}
+                </div>
+            </div>
+            <div className="bg-muted/50 px-6 py-3 flex justify-end rounded-b-lg border-t">
+                <Button>Save</Button>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Notificaciones ---
+const NotificationsSettings = () => {
+    return (
+        <div className="space-y-8">
+            <h3 className="text-xl font-semibold">Notifications</h3>
+            {/* Carrito Abandonado */}
+            <NotificationSettingsBlock
+                title="Abandoned Cart"
+                description="Send to the customer if they leave checkout before they buy the items in their cart."
+                toggleLabel="Enable Abandoned Cart emails"
+            >
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div className="flex justify-between items-center">
+                            <Label>Email Template</Label>
+                            <Button variant="link" className="p-0 h-auto text-sm">Preview</Button>
+                        </div>
+                        <Select defaultValue="default">
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="default">Default</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Subject *</Label>
+                        <Input defaultValue="Complete your purchase" />
+                    </div>
+                </div>
+                <div>
+                    <Label>Send after</Label>
+                    <div className="flex items-center gap-2">
+                        <Input type="number" defaultValue={1} className="w-20" />
+                        <Select defaultValue="hours">
+                            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="hours">hours</SelectItem>
+                                <SelectItem value="days">days</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </NotificationSettingsBlock>
+
+            {/* Confirmación de Orden */}
+            <NotificationSettingsBlock
+                title="Order confirmation Email for Stores"
+                description="Send your customers an order confirmation Email, using which they can access and view their past orders as well."
+                toggleLabel="Enable Order confirmation Email"
+            >
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                         <div className="flex justify-between items-center">
+                            <Label>Email Template</Label>
+                            <Button variant="link" className="p-0 h-auto text-sm">Preview</Button>
+                        </div>
+                        <Select defaultValue="default">
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="default">Default</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Subject</Label>
+                        <Input defaultValue="Your Order has been successfully placed! Thank you for s" />
+                    </div>
+                </div>
+            </NotificationSettingsBlock>
+
+            {/* Email de Envío de Orden */}
+            <NotificationSettingsBlock
+                title="Order fulfillment Email"
+                description="Send customers an order fulfillment email, this email will be sent to the user which will consist Shipping carrier, Tracking number, Tracking URL."
+                toggleLabel="Enable Order Fulfillment Email"
+            >
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div className="flex justify-between items-center">
+                            <Label>Email Template</Label>
+                            <Button variant="link" className="p-0 h-auto text-sm">Preview</Button>
+                        </div>
+                        <Select defaultValue="default">
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="default">Default</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Subject</Label>
+                        <Input defaultValue="{{order.company.name}} Order fulfilled" />
+                    </div>
+                </div>
+            </NotificationSettingsBlock>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Envío y Entrega (Shipping & Delivery) ---
+const ShippingAndDeliverySettings = () => {
+    return (
+        <div className="space-y-6">
+            <h3 className="text-xl font-semibold">Shipping & Delivery</h3>
+
+            {/* Sección de Zonas de Envío */}
+            <div className="space-y-4 pt-4 border-t">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h4 className="text-lg font-semibold">Shipping Zones</h4>
+                        <p className="text-sm text-muted-foreground">
+                            How much you charge for shipping at checkout.
+                            <Button variant="link" className="p-0 pl-1 h-auto">Learn more</Button>
+                        </p>
+                    </div>
+                    <Button><Plus className="mr-2 h-4 w-4" />Add Zone</Button>
+                </div>
+
+                {/* Estado Vacío */}
+                <div className="border-2 border-dashed rounded-lg min-h-[200px] flex flex-col items-center justify-center text-center p-6">
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                        <Globe2 className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="font-semibold text-foreground mb-1">No zones added yet!</p>
+                    <p className="text-sm text-muted-foreground">Add shipping zones to create rates for places you want to ship to.</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Origen de Envío (Shipping Origin) ---
+const ShippingOriginSettings = () => {
+    return (
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-xl font-semibold">Shipping origin</h3>
+                <p className="text-sm text-muted-foreground">Where do you ship from</p>
+            </div>
+            <div className="space-y-4 pt-6 border-t">
+                <div>
+                    <Label htmlFor="origin-business-name">Business Name *</Label>
+                    <Input id="origin-business-name" defaultValue="Udreamms LLC" />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="origin-phone">Phone *</Label>
+                        <Input id="origin-phone" defaultValue="+16507840581" />
+                    </div>
+                    <div>
+                        <Label htmlFor="origin-email">Email *</Label>
+                        <Input id="origin-email" type="email" defaultValue="joseph.flores.jc@gmail.com" />
+                    </div>
+                </div>
+                <div>
+                    <Label htmlFor="origin-street1">Street 1 *</Label>
+                    <Input id="origin-street1" defaultValue="470 W 200 NUnit 115" />
+                </div>
+                <div>
+                    <Label htmlFor="origin-street2">Street 2</Label>
+                    <Input id="origin-street2" placeholder="Street 2" />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="origin-country">Country *</Label>
+                        <Select defaultValue="us">
+                            <SelectTrigger id="origin-country"><SelectValue placeholder="Select a country" /></SelectTrigger>
+                            <SelectContent><SelectItem value="us">United States</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="origin-state">State *</Label>
+                        <Select defaultValue="utah">
+                            <SelectTrigger id="origin-state"><SelectValue placeholder="Select a state" /></SelectTrigger>
+                            <SelectContent><SelectItem value="utah">Utah</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="origin-city">City *</Label>
+                        <Input id="origin-city" defaultValue="Salt Lake City" />
+                    </div>
+                    <div>
+                        <Label htmlFor="origin-zip">Zip *</Label>
+                        <Input id="origin-zip" defaultValue="84103" />
+                    </div>
+                </div>
+            </div>
+            <div className="flex justify-end pt-6 border-t">
+                <Button>Save</Button>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Suscripciones (Subscriptions) ---
+const SubscriptionsSettings = () => {
+    const retryOptions = [
+        { id: 1, value: "Retry 1 day after the previous attempt" },
+        { id: 2, value: "Retry 1 day after the previous attempt" },
+        { id: 3, value: "Retry 1 day after the previous attempt" },
+    ];
+
+    return (
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-xl font-semibold">Subscription Settings</h3>
+            </div>
+
+            {/* Sección de Gestión de pagos fallidos */}
+            <div className="space-y-4 pt-6 border-t">
+                <div className="flex items-center gap-2">
+                    <h4 className="text-lg font-semibold">Manage failed payments for subscriptions</h4>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">Manually configure steps to manage failed payments for subscriptions until they succeed</p>
+                <div className="space-y-2 max-w-sm">
+                    {retryOptions.map(option => (
+                        <div key={option.id} className="flex items-center gap-2">
+                            <Select defaultValue="retry-1-day">
+                                <SelectTrigger><SelectValue placeholder={option.value} /></SelectTrigger>
+                                <SelectContent><SelectItem value="retry-1-day">{option.value}</SelectItem></SelectContent>
+                            </Select>
+                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Sección de Estado de la suscripción */}
+            <div className="space-y-2 pt-6 border-t">
+                <h4 className="text-lg font-semibold">Subscription status</h4>
+                <p className="text-sm text-muted-foreground">Subscription status to be updated to in case of all retries failing or in case there are no retries added</p>
+                <div className="flex items-center space-x-2 pt-2">
+                    <Checkbox id="cancel-subscription" />
+                    <Label htmlFor="cancel-subscription" className="font-normal">If all retries for a payment fail, cancel the subscription</Label>
+                </div>
+            </div>
+
+            {/* Sección de Gestión de facturas para pagos fallidos */}
+            <div className="space-y-4 pt-6 border-t">
+                 <div className="flex items-center gap-2">
+                    <h4 className="text-lg font-semibold">Manage Invoices for failed Subscription Payments</h4>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">Configure settings to enable or disable invoice creation and the option to send created invoices to customers.</p>
+                <div className="flex items-center space-x-2">
+                    <Switch id="auto-create-invoices" defaultChecked />
+                    <Label htmlFor="auto-create-invoices">Automatically create invoices for failed subscription payments</Label>
+                </div>
+                <p className="text-sm text-muted-foreground">Automatically send invoices for failed subscription payments to customers via</p>
+                <div className="space-y-2 pl-8">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="send-email" defaultChecked />
+                        <Label htmlFor="send-email" className="font-normal">Email</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="send-sms" defaultChecked />
+                        <Label htmlFor="send-sms" className="font-normal">SMS</Label>
+                    </div>
+                </div>
+            </div>
+
+            {/* Botones de Guardado */}
+            <div className="flex justify-end gap-2 pt-6 border-t">
+                <Button variant="outline">Cancel</Button>
+                <Button>Save</Button>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Cargos Misceláneos (Miscellaneous Charges) ---
+const MiscellaneousChargesSettings = () => {
+    return (
+        <div className="space-y-6">
+            <h3 className="text-xl font-semibold">Miscellaneous Charges</h3>
+            <div className="border rounded-lg mt-4">
+                <div className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <h4 className="text-lg font-semibold">Processing Charges</h4>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="flex items-start gap-4">
+                        <Switch id="processing-charges" />
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="processing-charges" className="font-medium">
+                                Enable passing processing charges to customers
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                                Fees incurred in processing customer payments like Credit Card processing fees or 
+                                convenience fees can be passed on to the customers
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-muted/50 px-6 py-4 flex justify-end gap-2 rounded-b-lg border-t">
+                    <Button variant="outline">Cancel</Button>
+                    <Button>Save</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-componente para los ajustes de Personalización de Enlaces de Pago ---
+const PaymentLinkCustomizationSettings = () => {
+    return (
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-xl font-semibold">Payment Link Customization</h3>
+            </div>
+            <div className="space-y-8 pt-6 border-t">
+                {/* Selección de Tema */}
+                <RadioGroup defaultValue="choose-theme" className="flex items-center gap-4">
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="choose-theme" id="choose-theme" />
+                        <Label htmlFor="choose-theme">Choose Theme</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="brand-board" id="brand-board" />
+                        <Label htmlFor="brand-board">Use Brand Board</Label>
+                    </div>
+                </RadioGroup>
+
+                {/* Selectores de Color */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
+                    <div>
+                        <Label htmlFor="bg-color">Background Color</Label>
+                        <div className="relative mt-1">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <div className="w-4 h-4 rounded-full border bg-white"></div>
+                            </div>
+                            <Input id="bg-color" defaultValue="#FFFFFF" className="pl-10" />
+                        </div>
+                    </div>
+                    <div>
+                        <Label htmlFor="btn-color">Button Color</Label>
+                         <div className="relative mt-1">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#155EEF' }}></div>
+                            </div>
+                            <Input id="btn-color" defaultValue="#155EEF" className="pl-10" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sección de Previsualización */}
+                <div>
+                    <h4 className="text-lg font-semibold mb-2">Preview</h4>
+                    <div className="bg-muted/30 p-4 rounded-lg">
+                        <Card className="p-6 md:p-8 shadow-md">
+                            <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+                                {/* Lado Izquierdo de la Previsualización */}
+                                <div className="w-full md:w-1/2 space-y-4">
+                                    <h5 className="text-2xl font-bold">Fitness Center</h5>
+                                    <div className="space-y-4">
+                                        <div className="flex gap-4">
+                                            <Box className="h-8 w-8 text-muted-foreground flex-shrink-0 mt-1" /> {/* <-- CORREGIDO AQUÍ */}
+                                            <div>
+                                                <p className="font-semibold">SMB Premium <span className="font-normal text-muted-foreground ml-2">$10</span></p>
+                                                <p className="text-sm text-muted-foreground">This is a sample product description for the preview.</p>
+                                            </div>
+                                        </div>
+                                         <div className="flex gap-4">
+                                            <Box className="h-8 w-8 text-muted-foreground flex-shrink-0 mt-1" /> {/* <-- Y CORREGIDO AQUÍ */}
+                                            <div>
+                                                <p className="font-semibold">SMB Premium <span className="font-normal text-muted-foreground ml-2">$10</span></p>
+                                                <p className="text-sm text-muted-foreground">This is a sample product description for the preview.</p>
+                                                <div className="flex items-center border rounded-md w-fit mt-2">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-lg">-</Button>
+                                                    <span className="px-4 font-medium">1</span>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-lg">+</Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Separator className="my-4"/>
+                                    <div className="flex justify-between text-sm"><p>Subtotal</p><p className="font-medium">$20.00</p></div>
+                                    <div className="flex justify-between text-sm items-center">
+                                        <p className="flex items-center gap-1 text-muted-foreground">Taxes <Info className="h-4 w-4" /></p>
+                                        <p className="font-medium">$0.00</p>
+                                    </div>
+                                </div>
+                                {/* Lado Derecho de la Previsualización */}
+                                <div className="w-full md:w-1/2 space-y-4 rounded-lg">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div><Label>First Name *</Label><Input placeholder="First Name" /></div>
+                                        <div><Label>Last Name *</Label><Input placeholder="Last Name" /></div>
+                                    </div>
+                                    <div><Label>Email *</Label><Input type="email" placeholder="Email" /></div>
+                                    <Button className="w-full h-12 text-base" style={{ backgroundColor: '#155EEF' }}>Pay</Button>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+             {/* Botón de Guardado */}
+            <div className="flex justify-end pt-6 border-t">
+                <Button>Save</Button>
+            </div>
+        </div>
+    );
+};
+
+// --- Vista Principal para la pestaña "Settings" ---
+const SettingsView = () => {
+    const [activeSettingsTab, setActiveSettingsTab] = useState("Receipts");
+    const settingsNav = [
+        "Receipts", "Taxes", "Notifications", "Shipping & Delivery", 
+        "Shipping Origin", "Subscriptions", "Miscellaneous Charges", "Payment Link Customization"
+    ];
+
+    const renderSettingsContent = () => {
+        switch(activeSettingsTab) {
+            case 'Receipts':
+                return <ReceiptsSettings />;
+            case 'Taxes': 
+                return <TaxesSettings />;
+             case 'Notifications': 
+                return <NotificationsSettings />;
+             case 'Shipping & Delivery':
+                return <ShippingAndDeliverySettings />;
+            case 'Shipping Origin': 
+                return <ShippingOriginSettings />;
+            case 'Subscriptions':
+                return <SubscriptionsSettings />;
+             case 'Miscellaneous Charges': 
+                return <MiscellaneousChargesSettings />;
+             case 'Payment Link Customization':
+                return <PaymentLinkCustomizationSettings />;
+            // Para las otras secciones, mostramos un placeholder por ahora
+            default:
+                return <PlaceholderContent title={activeSettingsTab} />;
+        }
+    };
+
+    return (
+        <Card>
+            <div className="flex flex-col md:flex-row">
+                <aside className="w-full md:w-1/4 border-b md:border-b-0 md:border-r p-4">
+                    <nav className="flex flex-col gap-1">
+                        {settingsNav.map(item => (
+                            <Button
+                                key={item}
+                                variant="ghost"
+                                className={`justify-start text-left h-auto py-2 ${activeSettingsTab === item ? 'bg-muted font-semibold' : ''}`}
+                                onClick={() => setActiveSettingsTab(item)}
+                            >
+                                {item}
+                            </Button>
+                        ))}
+                    </nav>
+                </aside>
+                <main className="w-full md:w-3/4 p-6">
+                    {renderSettingsContent()}
+                </main>
+            </div>
+        </Card>
+    );
+};
+
+
+interface ProviderItemProps {
+    logo: React.ReactNode; // React.ReactNode significa que puede ser cualquier elemento de React (un ícono, texto, etc.)
+    name: string;
+    description: string;
+}
+
+// Aplicamos la interfaz a las props del componente
+const ProviderItem = ({ logo, name, description }: ProviderItemProps) => (
+    <div className="border rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-4">
+            <div className="w-24 h-12 flex-shrink-0 flex items-center justify-center">
+                {logo}
+            </div>
+            <div>
+                <h4 className="font-semibold text-base">{name}</h4>
+                <p className="text-sm text-muted-foreground max-w-xl">{description}</p>
+            </div>
+        </div>
+        <Button variant="outline" className="w-full sm:w-auto flex-shrink-0">Connect</Button>
+    </div>
+);
+
+// --- Componente para la página "Integrations" ---
+const IntegrationsContent = () => {
+    const providers = [
+        { 
+            name: "Stripe", 
+            description: "Millions of businesses of all sizes—from startups to large enterprises—use Stripe’s software and APIs to accept payments, send payouts, and manage their businesses online.", 
+            logo: <p className="font-bold text-2xl text-indigo-600 tracking-tighter">stripe</p> 
+        },
+        { 
+            name: "PayPal", 
+            description: "With your Business account, you get access to diverse tools to help run your business and help it grow.", 
+            logo: <p className="font-bold text-2xl text-blue-800 italic">PayPal</p> 
+        },
+        { 
+            name: "Authorize.net", 
+            description: "With your Business account, you get access to diverse tools to help run your business and help it grow.", 
+            logo: <p className="font-semibold text-lg">authorize.net</p> 
+        },
+        { 
+            name: "NMI", 
+            description: "With your Business account, you get access to diverse tools to help run your business and help it grow.", 
+            logo: <p className="font-bold text-2xl text-green-600">nmi</p> 
+        },
+        { 
+            name: "Manual Payment Methods", 
+            description: "Add Cash on Delivery or Custom Payment Methods for Manual Payment Collection", 
+            logo: <HandCoins className="h-8 w-8 text-green-700" /> 
+        },
+        { 
+            name: "Square", 
+            description: "From small businesses to large enterprises, Square provides all the tools you need to start, run, and grow your business, including payment processing, point of sale, and business management solutions.", 
+            logo: <div className="w-8 h-8 bg-black flex items-center justify-center"><div className="w-3.5 h-3.5 border-2 border-white"></div></div> 
+        },
+    ];
+    
+    return (
+        <div className="space-y-6">
+            <div>
+                <h2 className="text-3xl font-bold">Payment Integrations</h2>
+                <p className="text-muted-foreground">Manage payment providers here</p>
+            </div>
+
+            <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">More Providers</h3>
+                    <Button variant="link" className="text-sm">Search For More</Button>
+                </div>
+
+                <div className="space-y-4">
+                    {providers.map(provider => (
+                        <ProviderItem key={provider.name} {...provider} />
+                    ))}
+                </div>
+
+                <div className="text-center pt-4">
+                    <Button variant="outline">Search For More</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // --- Placeholder for unimplemented views ---
 const PlaceholderContent = ({ title }: { title: string }) => (<div className="p-6 text-center"><h2 className="text-3xl font-bold">{title}</h2><p className="text-muted-foreground">This section is under construction.</p></div>);
@@ -495,6 +1565,11 @@ export default function PaymentsPage() {
         switch (activeTab) {
             case 'Invoices & Estimates': return <InvoicesAndEstimatesContent activeSubTab={activeInvoiceSubTab} onNavigate={setActiveTab} />;
             case 'Documents & Contracts': return <DocumentsAndContractsContent activeSubTab={activeDocsSubTab} onNavigate={setActiveTab} />;
+            case 'Subscriptions': return <SubscriptionsView />;
+            case 'Payment Links': return <PaymentLinksView />;
+            case 'Transactions': return <TransactionsView />;
+            case 'Coupons': return <CouponsView />;
+            case 'Settings': return <SettingsView />;
             case 'Integrations': return <IntegrationsContent />;
             default: return <PlaceholderContent title={activeTab} />;
         }
