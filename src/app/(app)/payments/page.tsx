@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
     Bold,
     Box,
-    HandCoins, // <-- CORREGIDO AQUÍ
+    HandCoins, 
     ChevronDown,
     CreditCard,
     DollarSign,
@@ -35,6 +35,7 @@ import {
     Trash2,
     Underline,
     UploadCloud,
+    ArrowUpDown,
     X,
 } from "lucide-react";
 import {
@@ -808,6 +809,343 @@ const CouponsView = () => {
     );
 };
 
+// --- Vista para "Orders" ---
+const OrdersView = () => {
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-bold">Orders</h2>
+                    <p className="text-muted-foreground">Track all order submissions in a single place</p>
+                </div>
+                <Button variant="outline"><FileDown className="mr-2 h-4 w-4" />Import as CSV</Button>
+            </div>
+            <Card>
+                <CardContent className="p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <div className="flex items-center gap-2 flex-grow">
+                            <Input placeholder="Start Date" className="w-40" />
+                            <span className="text-muted-foreground">→</span>
+                            <Input placeholder="End Date" className="w-40" />
+                            <div className="relative flex-grow max-w-xs">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search" className="pl-10" />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                             <Button variant="outline"><Filter className="mr-2 h-4 w-4"/>Filters</Button>
+                             <Button variant="ghost" size="icon"><RefreshCw className="h-5 w-5 text-muted-foreground" /></Button>
+                        </div>
+                    </div>
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent">
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Source</TableHead>
+                                    <TableHead>Items</TableHead>
+                                    <TableHead>Order Date</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={6}>
+                                        <div className="h-64 flex flex-col items-center justify-center text-center">
+                                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                                                <Search className="h-6 w-6 text-muted-foreground"/>
+                                            </div>
+                                            <p className="font-semibold text-foreground">No orders to show yet</p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- Vista para "Abandoned Checkouts" ---
+const AbandonedCheckoutsView = () => {
+    const tableHeaders = ["Placed By", "Date", "Items", "Amount", "Email Status", "Recovery Status"];
+
+    return (
+        <div className="space-y-6">
+            <div>
+                <h2 className="text-3xl font-bold">Abandoned Checkouts</h2>
+                <p className="text-muted-foreground">Incomplete online checkouts that were not processed.</p>
+            </div>
+            <Card>
+                {/* Encabezado de la tabla personalizado */}
+                <div className="p-4 bg-muted/40 border-b rounded-t-lg">
+                    <div className="grid grid-cols-6 gap-4 text-sm font-semibold text-muted-foreground">
+                        {tableHeaders.map(header => <div key={header}>{header}</div>)}
+                    </div>
+                </div>
+                <CardContent className="p-0">
+                    {/* Estado Vacío */}
+                    <div className="h-80 flex flex-col items-center justify-center text-center">
+                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                            <Search className="h-6 w-6 text-muted-foreground"/>
+                        </div>
+                        <p className="font-semibold text-foreground">No checkouts to show yet</p>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- Contenedor para el contenido de "Orders" ---
+const OrdersContent = ({ activeSubTab }: { activeSubTab: string }) => {
+    switch (activeSubTab) {
+        case "Orders": 
+            return <OrdersView />;
+        case "Abandoned Checkouts": 
+            return <AbandonedCheckoutsView />; // <-- LÍNEA ACTUALIZADA
+        default: 
+            return <OrdersView />;
+    }
+};
+
+// --- Vista para "Products" ---
+const ProductsView = () => {
+    const tableHeaders = ["Image", "Product name", "Product Type", "Updated", "Actions"];
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                <div>
+                    <h2 className="text-3xl font-bold">Products</h2>
+                    <p className="text-muted-foreground">
+                        Create and Manage products for your business. 
+                        <Button variant="link" className="p-0 pl-1">Learn more</Button>
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline"><FileDown className="mr-2 h-4 w-4" />Import as CSV</Button>
+                    <Button variant="outline"><UploadCloud className="mr-2 h-4 w-4" />Import from Stripe</Button>
+                    <Button><Plus className="mr-2 h-4 w-4" />Create Product</Button>
+                </div>
+            </div>
+            <Card>
+                <CardContent className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <p className="text-sm font-semibold">0 Products</p>
+                        <div className="flex items-center gap-2">
+                             <div className="relative w-full sm:max-w-xs">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search" className="pl-10" />
+                            </div>
+                            <Button variant="outline"><Filter className="mr-2 h-4 w-4"/>Filters</Button>
+                        </div>
+                    </div>
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[50px]"><Checkbox /></TableHead>
+                                    {tableHeaders.map(header => <TableHead key={header}>{header}</TableHead>)}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={tableHeaders.length + 1}>
+                                        <div className="h-80 flex flex-col items-center justify-center text-center">
+                                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                                                <Search className="h-6 w-6 text-muted-foreground"/>
+                                            </div>
+                                            <p className="font-semibold text-foreground mb-4">No products to show yet</p>
+                                            <Button><Plus className="mr-2 h-4 w-4"/>Create Product</Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- Vista para "Collections" ---
+const CollectionsView = () => {
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-3xl font-bold">Collection</h2>
+                    <p className="text-muted-foreground">Arrange your products in different collections</p>
+                </div>
+                <Button><Plus className="mr-2 h-4 w-4" />Create Collection</Button>
+            </div>
+            <Card>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Collection Name</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={1}>
+                                <div className="h-80 flex flex-col items-center justify-center text-center">
+                                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                                        <Search className="h-6 w-6 text-muted-foreground"/>
+                                    </div>
+                                    <p className="font-semibold text-foreground mb-4">No collections to show yet</p>
+                                    <Button><Plus className="mr-2 h-4 w-4"/>Create Collection</Button>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </Card>
+        </div>
+    );
+};
+
+// --- Vista para "Inventory" ---
+const InventoryView = () => {
+    const tableHeaders = ["Product name", "SKU", "Available quantity", "Continue selling when out of stock"];
+
+    return (
+        <div className="space-y-6">
+            <div>
+                <h2 className="text-3xl font-bold">Inventory</h2>
+                <p className="text-muted-foreground">Manage your Product Inventory</p>
+            </div>
+            <div className="relative w-full sm:max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search" className="pl-10" />
+            </div>
+            <div className="border rounded-lg">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {tableHeaders.map(header => <TableHead key={header}>{header}</TableHead>)}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell colSpan={tableHeaders.length}>
+                                <div className="h-64 flex items-center justify-center text-muted-foreground font-semibold">
+                                    No inventory to show yet
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+                <div className="flex items-center justify-end p-4 border-t text-sm text-muted-foreground gap-4">
+                    <div className="flex items-center gap-2">
+                        <span>Rows per page</span>
+                        <Select defaultValue="10">
+                            <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="10">10</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <span>0 - 0 of 0</span>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" disabled>Previous</Button>
+                        <Button variant="outline" size="sm" disabled>1</Button>
+                        <Button variant="outline" size="sm" disabled>Next</Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Vista para "Reviews" ---
+const ReviewsView = () => {
+    const [activeReviewTab, setActiveReviewTab] = useState('Pending');
+    const reviewTabs = ["Pending (0)", "Approved (0)", "Unapproved (0)", "Trash (0)"];
+    const tableHeaders = ["Author", "Review Details", "Rating", "Date & Time", "Product & Store Name"];
+    
+    return (
+        <div className="space-y-6">
+            <div>
+                <h2 className="text-3xl font-bold">Product Reviews and Ratings</h2>
+                <p className="text-muted-foreground">Manage and store Reviews and ratings at one place</p>
+            </div>
+            <div className="flex items-center border-b">
+                {reviewTabs.map(tab => (
+                    <Button 
+                        key={tab}
+                        variant="ghost"
+                        onClick={() => setActiveReviewTab(tab.split(' ')[0])}
+                        className={`rounded-none border-b-2 font-semibold ${activeReviewTab === tab.split(' ')[0] ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}
+                    >
+                        {tab}
+                    </Button>
+                ))}
+            </div>
+            <Card>
+                <CardContent className="p-6 space-y-4">
+                    <div className="flex justify-end items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <Input placeholder="Start Date" type="date" className="w-40" />
+                            <span>→</span>
+                            <Input placeholder="End Date" type="date" className="w-40" />
+                        </div>
+                        <Button variant="outline"><Filter className="mr-2 h-4 w-4"/>Filters</Button>
+                    </div>
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[50px]"><Checkbox /></TableHead>
+                                    {tableHeaders.map(header => (
+                                        <TableHead key={header}>
+                                            <div className="flex items-center gap-1">
+                                                {header}
+                                                {(header === 'Rating' || header === 'Date & Time') && <ArrowUpDown className="h-4 w-4" />}
+                                            </div>
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                             <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={tableHeaders.length + 1}>
+                                        <div className="h-80 flex flex-col items-center justify-center text-center">
+                                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                                                <Search className="h-6 w-6 text-muted-foreground"/>
+                                            </div>
+                                            <p className="font-semibold text-foreground">No Reviews to show</p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// --- Contenedor para el contenido de "Products" ---
+const ProductsContent = ({ activeSubTab }: { activeSubTab: string }) => {
+    switch (activeSubTab) {
+        case "Products": 
+            return <ProductsView />;
+        case "Collections": 
+            return <CollectionsView />; 
+        case "Inventory": 
+            return <InventoryView />;   
+        case "Reviews": 
+            return <ReviewsView />; 
+        default: 
+            return <ProductsView />;
+    }
+};
+
 // --- Sub-componente para los ajustes de Recibos (Receipts) ---
 const ReceiptsSettings = () => {
     return (
@@ -1547,15 +1885,22 @@ export default function PaymentsPage() {
     const [activeTab, setActiveTab] = useState("Invoices & Estimates");
     const [activeInvoiceSubTab, setActiveInvoiceSubTab] = useState("All Invoices");
     const [activeDocsSubTab, setActiveDocsSubTab] = useState("All Documents & Contracts");
+    const [activeOrdersSubTab, setActiveOrdersSubTab] = useState("Orders");
+    const [activeProductsSubTab, setActiveProductsSubTab] = useState("Products");
 
     const navItems = [
         { name: "Invoices & Estimates", isDropdown: true, subItems: [{ name: "All Invoices", isNew: false },{ name: "Recurring Invoices", isNew: false },{ name: "Templates", isNew: false },{ name: "Estimates", isNew: true },]},
         { name: "Documents & Contracts", isDropdown: true, subItems: [{ name: "All Documents & Contracts", isNew: false },{ name: "Templates", isNew: false },]},
-        { name: "Orders", isDropdown: true },
+        { name: "Orders", isDropdown: true, subItems: [{ name: "Orders", isNew: false },{ name: "Abandoned Checkouts", isNew: true }]},
         { name: "Subscriptions", isDropdown: false },
         { name: "Payment Links", isDropdown: false },
         { name: "Transactions", isDropdown: false },
-        { name: "Products", isDropdown: false },
+        { name: "Products", isDropdown: true, subItems: [{ name: "Products", isNew: false },
+        { name: "Collections", isNew: false },
+        { name: "Inventory", isNew: false },
+        { name: "Reviews", isNew: true }
+    ]
+},
         { name: "Coupons", isDropdown: false },
         { name: "Settings", isDropdown: false },
         { name: "Integrations", isDropdown: false },
@@ -1565,9 +1910,11 @@ export default function PaymentsPage() {
         switch (activeTab) {
             case 'Invoices & Estimates': return <InvoicesAndEstimatesContent activeSubTab={activeInvoiceSubTab} onNavigate={setActiveTab} />;
             case 'Documents & Contracts': return <DocumentsAndContractsContent activeSubTab={activeDocsSubTab} onNavigate={setActiveTab} />;
+            case 'Orders': return <OrdersContent activeSubTab={activeOrdersSubTab} />;
             case 'Subscriptions': return <SubscriptionsView />;
             case 'Payment Links': return <PaymentLinksView />;
             case 'Transactions': return <TransactionsView />;
+            case 'Products': return <ProductsContent activeSubTab={activeProductsSubTab} />;
             case 'Coupons': return <CouponsView />;
             case 'Settings': return <SettingsView />;
             case 'Integrations': return <IntegrationsContent />;
@@ -1594,6 +1941,8 @@ export default function PaymentsPage() {
                                                             setActiveTab(item.name);
                                                             if(item.name === "Invoices & Estimates") { setActiveInvoiceSubTab(subItem.name); } 
                                                             else if (item.name === "Documents & Contracts") { setActiveDocsSubTab(subItem.name); }
+                                                            else if (item.name === "Orders") { setActiveOrdersSubTab(subItem.name); } 
+                                                            else if (item.name === "Products") { setActiveProductsSubTab(subItem.name); }
                                                         }}>
                                                             <span className={ (item.name === "Invoices & Estimates" && activeInvoiceSubTab === subItem.name) || (item.name === "Documents & Contracts" && activeDocsSubTab === subItem.name) ? 'text-primary' : '' }>{subItem.name}</span>
                                                             {subItem.isNew && <span className="ml-auto text-xs bg-yellow-400/80 text-yellow-900 px-1.5 py-0.5 rounded-sm font-bold">New</span>}

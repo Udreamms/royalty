@@ -1,12 +1,11 @@
 "use client";
-// Este archivo es la lista de tus workflows. Es una versión mejorada
-// de tu antiguo `BotManagerPage`. El código es muy similar.
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Loader2 } from "lucide-react";
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-client';
 import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function AutomationPage() {
@@ -32,7 +31,8 @@ export default function AutomationPage() {
                     <p className="text-muted-foreground mt-1">Crea flujos que trabajan por ti.</p>
                 </div>
                 <Button asChild>
-                    <Link href="/automation/new" legacyBehavior><PlusCircle className="mr-2 h-4 w-4" />Crear Workflow</Link>
+                    {/* CORRECCIÓN: Se eliminó legacyBehavior */}
+                    <Link href="/automation/new"><PlusCircle className="mr-2 h-4 w-4" />Crear Workflow</Link>
                 </Button>
             </header>
             <Card>
@@ -45,7 +45,8 @@ export default function AutomationPage() {
                     <ul>
                         {workflows.map(wf => (
                             <li key={wf.id} className="border-b p-2 hover:bg-muted">
-                               <Link href={`/automation/${wf.id}`} legacyBehavior>{wf.name || wf.id}</Link>
+                                 {/* CORRECCIÓN: Se eliminó legacyBehavior */}
+                                <Link href={`/automation/${wf.id}`}>{wf.name || wf.id}</Link>
                             </li>
                         ))}
                     </ul>
