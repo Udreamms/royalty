@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Switch } from "@/components/ui/switch"; 
 import { useToast } from "@/hooks/use-toast";
 import { Timestamp, collection, query, onSnapshot, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-client';
 
 interface Bot {
   id: string;
